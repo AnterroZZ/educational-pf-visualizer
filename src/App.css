@@ -1,3 +1,9 @@
+* {
+  margin: 0px;
+  box-sizing: border-box;
+  font-family: "Montserrat", sans-serif;
+}
+
 .App {
   text-align: center;
 }

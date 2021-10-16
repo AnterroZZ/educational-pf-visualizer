@@ -1,0 +1,13 @@
+.item {
+  background: white;
+  color: black;
+  padding: 5px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.1s;
+}
+
+.item:hover {
+  background: #161616;
+  color: white;
+}
