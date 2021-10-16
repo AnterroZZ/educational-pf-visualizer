@@ -20,7 +20,7 @@ const Picker = (props) => {
     <div ref={currentRef} onClick={() => setOpen((prev) => !prev)}>
       <div className={styles.wraper}>
         <p>{props.name}</p>
-        <div className={styles.triangle}></div>
+        <div className={open ? styles.triangleOpen : styles.triangle}></div>
       </div>
       {open && props.children}
     </div>
