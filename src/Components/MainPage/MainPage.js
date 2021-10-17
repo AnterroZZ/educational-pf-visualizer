@@ -19,7 +19,10 @@ const populateNodes = () => {
   for (let row = 0; row < 20; row++) {
     let currentRow = [];
     for (let column = 0; column < 50; column++) {
-      currentRow.push(new SingleNode(row * 50 + column, row, column));
+      const node = new SingleNode(row * 50 + column, row, column);
+      if (column === 10 && row === 10) node.type = "start";
+      if (column === 40 && row === 10) node.type = "end";
+      currentRow.push(node);
     }
     nodes.push(currentRow);
   }
@@ -28,16 +31,12 @@ const populateNodes = () => {
 };
 
 const MainPage = () => {
-  const [isPopulated, setIsPopulated] = useState(false);
   const [nodes, setNodes] = useState([]);
   const [isInDrawingMode, setIsInDrawingMode] = useState(false);
   const [drawingType, setDrawingType] = useState("");
 
   useEffect(() => {
-    let nodes = populateNodes();
-    console.log("Populating nodes");
-    setNodes(nodes);
-    setIsPopulated(true);
+    setNodes(populateNodes());
   }, []);
 
   return (
@@ -45,25 +44,24 @@ const MainPage = () => {
       onMouseLeave={() => setIsInDrawingMode(false)}
       className={styles.nodesWraper}
     >
-      {isPopulated &&
-        nodes.map((row, rowIdx) => {
-          return (
-            <div className={styles.rowWraper} key={rowIdx}>
-              {row.map((node, nodeidx) => {
-                return (
-                  <Node
-                    key={node.id}
-                    isInDrawingMode={isInDrawingMode}
-                    setIsInDrawingMode={setIsInDrawingMode}
-                    drawingType={drawingType}
-                    setDrawingType={setDrawingType}
-                    node={node}
-                  />
-                );
-              })}
-            </div>
-          );
-        })}
+      {nodes.map((row, rowIdx) => {
+        return (
+          <div className={styles.rowWraper} key={rowIdx}>
+            {row.map((node, nodeidx) => {
+              return (
+                <Node
+                  key={node.id}
+                  isInDrawingMode={isInDrawingMode}
+                  setIsInDrawingMode={setIsInDrawingMode}
+                  drawingType={drawingType}
+                  setDrawingType={setDrawingType}
+                  node={node}
+                />
+              );
+            })}
+          </div>
+        );
+      })}
     </div>
   );
 };

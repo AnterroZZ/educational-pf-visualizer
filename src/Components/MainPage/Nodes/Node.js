@@ -58,6 +58,8 @@ const Node = ({
       onMouseOver={handleOnHover}
       className={`${styles.node} ${
         singleNode.type === "wall" ? styles.wall : ""
+      } ${singleNode.type === "start" ? styles.start : ""}${
+        singleNode.type === "end" ? styles.end : ""
       }`}
     ></div>
   );
