@@ -3,12 +3,13 @@
   /* aspect-ratio: 1; */
   cursor: pointer;
   /* aspect-ratio: 1; */
+  animation: grow4 0.5s linear;
 }
 
 .wall {
   background: #353535;
   border: 1px rgb(32, 32, 32) solid;
-  animation: grow 0.5s linear;
+  animation: grow 0.3s linear;
 }
 
 .start {

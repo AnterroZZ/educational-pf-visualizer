@@ -2,6 +2,7 @@ import Node from "./Nodes/Node";
 import styles from "./MainPage.module.css";
 import { useEffect, useState } from "react";
 import { useControls } from "../Contex/ControlsContext";
+import { recursive } from "../mazes/recursive";
 
 // Node types are: clear, wall, start, end, visited
 function singleNode(id, row, column) {
@@ -39,12 +40,17 @@ const MainPage = () => {
   const updateNodes = (nodes, col, row, type, prevType = type) => {
     const newNodes = nodes.slice();
     const node = nodes[row][col];
-    // console.log("Previous node", node);
     const newNode = { ...node, type: type, prevType: prevType };
-    // console.log("New Node", newNode);
     newNodes[row][col] = newNode;
-    setNodes(newNodes);
     return newNodes;
+  };
+
+  useEffect(() => {
+    setNodes(populateNodes());
+  }, [clear]);
+
+  const generateMaze = () => {
+    recursive(nodes, setNodes, updateNodes);
   };
 
   return (
@@ -62,12 +68,14 @@ const MainPage = () => {
                   key={node.id}
                   row={node.row}
                   column={node.column}
+                  generateMaze={generateMaze}
                   isInDrawingMode={isInDrawingMode}
                   setIsInDrawingMode={setIsInDrawingMode}
                   drawingType={drawingType}
                   setDrawingType={setDrawingType}
                   node={node}
                   nodes={nodes}
+                  setNodes={setNodes}
                   updateNodes={updateNodes}
                 />
               );
