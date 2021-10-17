@@ -5,15 +5,6 @@ import { useControls } from "../Contex/ControlsContext";
 
 // Node types are: clear, wall, start, end, visited
 function singleNode(id, row, column) {
-  // this.id = id;
-  // this.row = row;
-  // this.column = column;
-  // this.type = "clear";
-  // this.prevType = "clear";
-  // this.isStart = false;
-  // this.isEnd = false;
-  // this.isWall = false;
-  // this.isVisited = false;
   return {
     id: id,
     row: row,
@@ -44,19 +35,6 @@ const MainPage = () => {
   const [isInDrawingMode, setIsInDrawingMode] = useState(false);
   const [drawingType, setDrawingType] = useState("");
   const { clear } = useControls();
-
-  useEffect(() => {
-    let newNodes = nodes.slice();
-    newNodes.forEach((row) =>
-      row.forEach((node) => {
-        if (node.type === "wall") {
-          newNodes[node.row][node.column] = { ...node, type: "clear" };
-        }
-      })
-    );
-    console.log("Brand new nodes: ", newNodes);
-    setNodes([...newNodes]);
-  }, [clear]);
 
   const updateNodes = (nodes, col, row, type, prevType = type) => {
     const newNodes = nodes.slice();
