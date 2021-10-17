@@ -14,16 +14,42 @@
 .start {
   background: rgb(41, 255, 41);
   border: 1px rgb(36, 201, 36) solid;
-  animation: grow 0.5s linear;
+  animation: grow2 0.5s linear;
 }
 .end {
   background: rgb(253, 8, 8);
   border: 1px rgb(189, 10, 10) solid;
-  animation: grow 0.5s linear;
+  animation: grow3 0.5s linear;
 }
 @keyframes grow {
   0% {
     transform: scale(1);
+  }
+
+  40% {
+    transform: scale(1.2);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes grow2 {
+  0% {
+    transform: scale(1);
+  }
+
+  40% {
+    transform: scale(1.2);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes grow3 {
+  0% {
+    transform: scale(0);
   }
 
   40% {

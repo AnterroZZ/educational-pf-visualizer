@@ -8,6 +8,7 @@ function SingleNode(id, row, column) {
   this.row = row;
   this.column = column;
   this.type = "clear";
+  this.prevType = "clear";
   this.isStart = false;
   this.isEnd = false;
   this.isWall = false;
