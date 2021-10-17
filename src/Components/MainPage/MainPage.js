@@ -15,11 +15,11 @@ function singleNode(id, row, column) {
   };
 }
 
-const populateNodes = () => {
+export const populateNodes = () => {
   let nodes = [];
-  for (let row = 0; row < 20; row++) {
+  for (let row = 0; row < 21; row++) {
     let currentRow = [];
-    for (let column = 0; column < 50; column++) {
+    for (let column = 0; column < 51; column++) {
       const node = singleNode(row * 50 + column, row, column);
       if (column === 10 && row === 10) node.type = "start";
       if (column === 40 && row === 10) node.type = "end";
@@ -50,6 +50,7 @@ const MainPage = () => {
   }, [clear]);
 
   const generateMaze = () => {
+    setNodes(populateNodes());
     recursive(nodes, setNodes, updateNodes);
   };
 
