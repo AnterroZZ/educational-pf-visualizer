@@ -1,4 +1,25 @@
 .node {
   border: 1px #b6b6b6 solid;
   /* aspect-ratio: 1; */
+  cursor: pointer;
+  /* aspect-ratio: 1; */
+}
+
+.wall {
+  background: #353535;
+  border: 1px rgb(32, 32, 32) solid;
+  animation: grow 0.5s linear;
+}
+@keyframes grow {
+  0% {
+    transform: scale(1);
+  }
+
+  40% {
+    transform: scale(1.2);
+  }
+
+  100% {
+    transform: scale(1);
+  }
 }

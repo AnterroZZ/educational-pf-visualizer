@@ -1,5 +1,10 @@
 .nodesWraper {
   display: grid;
-  grid-template-columns: repeat(50, 1fr);
+  overflow: hidden;
   grid-template-rows: repeat(20, 1fr);
+}
+
+.rowWraper {
+  display: grid;
+  grid-template-columns: repeat(50, 1fr);
 }
