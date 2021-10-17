@@ -7,25 +7,42 @@ const Node = ({
   setIsInDrawingMode,
   setDrawingType,
   drawingType,
+  row,
+  column,
+  setNodes,
+  nodes,
+  updateNodes,
 }) => {
   const [singleNode, setSingleNode] = useState(node);
   const handleOnHover = () => {
     if (isInDrawingMode) {
+      let node = nodes[row][column];
       switch (drawingType) {
         case "wall":
           if (singleNode.type === "clear") {
+            nodes[row][column] = { ...node, type: "wall", prevType: "clear" };
             setSingleNode({ ...singleNode, type: "wall", prevType: "clear" });
           }
           break;
         case "clear":
           if (singleNode.type === "wall") {
+            nodes[row][column] = { ...node, type: "clear", prevType: "wall" };
             setSingleNode({ ...singleNode, type: "clear", prevType: "wall" });
           }
           break;
         case "start":
+          nodes[row][column] = { ...node, type: "start", prevType: node.type };
           setSingleNode({
             ...singleNode,
             type: "start",
+            prevType: singleNode.type,
+          });
+          break;
+        case "end":
+          nodes[row][column] = { ...node, type: "end", prevType: node.type };
+          setSingleNode({
+            ...singleNode,
+            type: "end",
             prevType: singleNode.type,
           });
           break;
@@ -40,6 +57,8 @@ const Node = ({
     setIsInDrawingMode(true);
     switch (singleNode.type) {
       case "clear":
+        let node = nodes[row][column];
+        nodes[row][column] = { ...node, type: "wall" };
         setDrawingType("wall");
         setSingleNode({ ...singleNode, type: "wall" });
 
@@ -54,31 +73,28 @@ const Node = ({
         console.log("Moving starting node");
         setDrawingType("start");
         break;
+      case "end":
+        console.log("Moving ending node");
+        setDrawingType("end");
+        break;
       default:
         break;
     }
   };
   const handleOnLeave = () => {
     if (isInDrawingMode) {
-      switch (drawingType) {
-        case "start":
-          setSingleNode({ ...singleNode, type: singleNode.prevType });
-          break;
-        default:
-          break;
+      if (drawingType === "start" || drawingType === "end") {
+        node.type = singleNode.prevType;
+        setSingleNode({ ...singleNode, type: singleNode.prevType });
       }
     }
-  };
-  const handleStopDrawing = () => {
-    setIsInDrawingMode(false);
   };
   return (
     <div
       onMouseDown={handleStartDrawing}
-      onMouseUp={handleStopDrawing}
-      onMouseOver={handleOnHover}
+      onMouseEnter={handleOnHover}
       onMouseLeave={handleOnLeave}
-      className={`${styles.node} ${
+      className={`${singleNode.type === "clear" ? styles.node : ""} ${
         singleNode.type === "wall" ? styles.wall : ""
       } ${singleNode.type === "start" ? styles.start : ""}${
         singleNode.type === "end" ? styles.end : ""

@@ -1,18 +1,26 @@
 import Node from "./Nodes/Node";
 import styles from "./MainPage.module.css";
 import { useEffect, useState } from "react";
+import { useControls } from "../Contex/ControlsContext";
 
 // Node types are: clear, wall, start, end, visited
-function SingleNode(id, row, column) {
-  this.id = id;
-  this.row = row;
-  this.column = column;
-  this.type = "clear";
-  this.prevType = "clear";
-  this.isStart = false;
-  this.isEnd = false;
-  this.isWall = false;
-  this.isVisited = false;
+function singleNode(id, row, column) {
+  // this.id = id;
+  // this.row = row;
+  // this.column = column;
+  // this.type = "clear";
+  // this.prevType = "clear";
+  // this.isStart = false;
+  // this.isEnd = false;
+  // this.isWall = false;
+  // this.isVisited = false;
+  return {
+    id: id,
+    row: row,
+    column: column,
+    type: "clear",
+    prevType: "clear",
+  };
 }
 
 const populateNodes = () => {
@@ -20,7 +28,7 @@ const populateNodes = () => {
   for (let row = 0; row < 20; row++) {
     let currentRow = [];
     for (let column = 0; column < 50; column++) {
-      const node = new SingleNode(row * 50 + column, row, column);
+      const node = singleNode(row * 50 + column, row, column);
       if (column === 10 && row === 10) node.type = "start";
       if (column === 40 && row === 10) node.type = "end";
       currentRow.push(node);
@@ -32,16 +40,38 @@ const populateNodes = () => {
 };
 
 const MainPage = () => {
-  const [nodes, setNodes] = useState([]);
+  const [nodes, setNodes] = useState(populateNodes());
   const [isInDrawingMode, setIsInDrawingMode] = useState(false);
   const [drawingType, setDrawingType] = useState("");
+  const { clear } = useControls();
 
   useEffect(() => {
-    setNodes(populateNodes());
-  }, []);
+    let newNodes = nodes.slice();
+    newNodes.forEach((row) =>
+      row.forEach((node) => {
+        if (node.type === "wall") {
+          newNodes[node.row][node.column] = { ...node, type: "clear" };
+        }
+      })
+    );
+    console.log("Brand new nodes: ", newNodes);
+    setNodes([...newNodes]);
+  }, [clear]);
+
+  const updateNodes = (nodes, col, row, type, prevType = type) => {
+    const newNodes = nodes.slice();
+    const node = nodes[row][col];
+    // console.log("Previous node", node);
+    const newNode = { ...node, type: type, prevType: prevType };
+    // console.log("New Node", newNode);
+    newNodes[row][col] = newNode;
+    setNodes(newNodes);
+    return newNodes;
+  };
 
   return (
     <div
+      onMouseUp={() => setIsInDrawingMode(false)}
       onMouseLeave={() => setIsInDrawingMode(false)}
       className={styles.nodesWraper}
     >
@@ -52,11 +82,15 @@ const MainPage = () => {
               return (
                 <Node
                   key={node.id}
+                  row={node.row}
+                  column={node.column}
                   isInDrawingMode={isInDrawingMode}
                   setIsInDrawingMode={setIsInDrawingMode}
                   drawingType={drawingType}
                   setDrawingType={setDrawingType}
                   node={node}
+                  nodes={nodes}
+                  updateNodes={updateNodes}
                 />
               );
             })}
