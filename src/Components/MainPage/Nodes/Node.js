@@ -42,6 +42,7 @@ const Node = ({
 
   const handleStartDrawing = (event) => {
     event.preventDefault();
+    console.log(node);
     setIsInDrawingMode(true);
     if (node.id === 0) {
       generateMaze();
@@ -91,7 +92,7 @@ const Node = ({
         node.type === "wall" ? styles.wall : ""
       } ${node.type === "start" ? styles.start : ""}${
         node.type === "end" ? styles.end : ""
-      }`}
+      } ${node.type === "visited" ? styles.visited : ""}`}
     >
       {/* {node.id} */}
     </div>

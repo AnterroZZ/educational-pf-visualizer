@@ -12,6 +12,7 @@ function singleNode(id, row, column) {
     column: column,
     type: "clear",
     prevType: "clear",
+    neighbours: [],
   };
 }
 
@@ -51,7 +52,7 @@ const MainPage = () => {
 
   const generateMaze = () => {
     setNodes(populateNodes());
-    recursive(nodes, setNodes, updateNodes);
+    recursive(nodes, setNodes);
   };
 
   return (

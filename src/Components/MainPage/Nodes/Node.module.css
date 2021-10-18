@@ -12,6 +12,12 @@
   animation: grow 0.3s linear;
 }
 
+.visted {
+  background: #1ce5ff;
+  border: 1px #1bb6ca solid;
+  animation: grow 0.3s linear;
+}
+
 .start {
   background: rgb(41, 255, 41);
   border: 1px rgb(36, 201, 36) solid;
