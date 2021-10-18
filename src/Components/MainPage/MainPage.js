@@ -2,7 +2,7 @@ import Node from "./Nodes/Node";
 import styles from "./MainPage.module.css";
 import { useEffect, useState } from "react";
 import { useControls } from "../Contex/ControlsContext";
-import { recursive } from "../mazes/recursive";
+import { recursiveBacktracking } from "../mazes/recursiveBacktracking";
 
 // Node types are: clear, wall, start, end, visited
 function singleNode(id, row, column) {
@@ -52,7 +52,7 @@ const MainPage = () => {
 
   const generateMaze = () => {
     setNodes(populateNodes());
-    recursive(nodes, setNodes);
+    recursiveBacktracking(nodes, setNodes);
   };
 
   return (

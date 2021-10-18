@@ -12,10 +12,9 @@
   animation: grow 0.3s linear;
 }
 
-.visted {
+.visited {
   background: #1ce5ff;
   border: 1px #1bb6ca solid;
-  animation: grow 0.3s linear;
 }
 
 .start {

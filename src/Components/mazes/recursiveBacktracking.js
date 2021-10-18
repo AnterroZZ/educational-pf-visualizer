@@ -6,8 +6,9 @@ function Neighbour(row, column) {
     column: column,
   };
 }
-export async function recursive(nodes, setNodes) {
+export async function recursiveBacktracking(nodes, setNodes) {
   //Walls around grid
+  setNodes(populateNodes());
   const searchNodes = [];
   setNodes(setNeighbours(nodes));
   for (let row = 0; row < 21; row++) {
@@ -31,39 +32,74 @@ export async function recursive(nodes, setNodes) {
 
   const startingNode =
     searchNodes[Math.floor(Math.random() * searchNodes.length)];
-  console.log(startingNode);
 
   recursiveBacktrackingIterative(startingNode, nodes, setNodes);
 }
 
 const recursiveBacktrackingIterative = (startingNode, nodes, setNodes) => {
   const stack = [];
-  markAsVisited(startingNode, nodes, setNodes);
+  const stack2 = [];
+  markAsVisited(startingNode.row, startingNode.column, nodes, setNodes, true);
   stack.push(startingNode);
   while (stack.length > 0) {
     let currentNode = stack.pop();
-    console.log(currentNode);
 
-    let unvisited = startingNode.neighbours.filter((neighbour) => {
-      return nodes[neighbour.row][neighbour.column] !== "visited";
+    let unvisited = currentNode.neighbours.filter((neighbour) => {
+      return nodes[neighbour.row][neighbour.column].type !== "visited";
     });
-
-    console.log(unvisited);
-
     if (unvisited.length > 0) {
-      // stack.push(currentNode);
-      let next = unvisited[Math.random() * unvisited.length];
+      stack.push(currentNode);
+      let next = unvisited[Math.floor(Math.random() * unvisited.length)];
+      stack2.push(deleteWallBetween(currentNode, next, nodes, setNodes));
+      markAsVisited(next.row, next.column, nodes, setNodes, true);
+      stack.push(nodes[next.row][next.column]);
+    } else {
+      stack2.push(currentNode);
     }
   }
+  markAsUnvisited(stack2, nodes, setNodes);
 };
 
-const markAsVisited = (node, nodes, setNodes) => {
+const deleteWallBetween = (curr, next, nodes, setNodes) => {
   const newNodes = nodes.slice();
-  const currNode = nodes[node.row][node.column];
-  const newNode = { ...currNode, type: "visited", prevType: "clear" };
-  newNodes[node.row][node.column] = newNode;
+  let foundRow = 0;
+  let foundCol = 0;
+  if (curr.row < next.row) {
+    foundRow = curr.row + 1;
+    foundCol = curr.column;
+  } else if (curr.row > next.row) {
+    foundRow = curr.row - 1;
+    foundCol = curr.column;
+  } else if (curr.column < next.column) {
+    foundRow = curr.row;
+    foundCol = curr.column + 1;
+  } else {
+    foundRow = curr.row;
+    foundCol = curr.column - 1;
+  }
+  const foundNode = nodes[foundRow][foundCol];
+  const newFoundNode = { ...foundNode, type: "visited", prevType: "clear" };
+  newNodes[foundRow][foundCol] = newFoundNode;
   setNodes(newNodes);
-  sleep(1);
+  return newFoundNode;
+};
+
+const markAsUnvisited = (stack, nodes, setNodes) => {
+  const newNodes = nodes.slice();
+  stack.map((node) => {
+    const currNode = nodes[node.row][node.column];
+    const newNode = { ...currNode, type: "clear", prevType: "clear" };
+    newNodes[node.row][node.column] = newNode;
+  });
+
+  setNodes(newNodes);
+};
+const markAsVisited = (row, column, nodes, setNodes) => {
+  const newNodes = nodes.slice();
+  const currNode = nodes[row][column];
+  const newNode = { ...currNode, type: "visited", prevType: "clear" };
+  newNodes[row][column] = newNode;
+  setNodes(newNodes);
 };
 
 const sleep = (ms) => {
