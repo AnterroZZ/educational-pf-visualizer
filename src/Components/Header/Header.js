@@ -6,7 +6,7 @@ import DropdownItem from "./HeaderComponents/DropdownItem/DropdownItem";
 import { useAlgorithm } from "../Contex/AlgorithmsContext";
 
 const Header = () => {
-  const { setCurrentAlgorithm } = useAlgorithm();
+  const { setCurrentAlgorithm, setCurrentMazeAlgorithm } = useAlgorithm();
 
   const handleAlgoritmsChosen = (name) => {
     setCurrentAlgorithm(name);
@@ -14,6 +14,7 @@ const Header = () => {
   };
 
   const handleMazeChosen = (name) => {
+    setCurrentMazeAlgorithm(name);
     console.log(name);
   };
   return (

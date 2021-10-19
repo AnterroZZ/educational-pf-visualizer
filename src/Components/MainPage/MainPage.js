@@ -3,6 +3,7 @@ import styles from "./MainPage.module.css";
 import { useEffect, useState } from "react";
 import { useControls } from "../Contex/ControlsContext";
 import { recursiveBacktracking } from "../mazes/recursiveBacktracking";
+import { useAlgorithm } from "../Contex/AlgorithmsContext";
 
 // Node types are: clear, wall, start, end, visited
 function singleNode(id, row, column) {
@@ -37,6 +38,7 @@ const MainPage = () => {
   const [isInDrawingMode, setIsInDrawingMode] = useState(false);
   const [drawingType, setDrawingType] = useState("");
   const { clear } = useControls();
+  const { currentMazeAlgorithm } = useAlgorithm();
 
   const updateNodes = (nodes, col, row, type, prevType = type) => {
     const newNodes = nodes.slice();
@@ -54,6 +56,13 @@ const MainPage = () => {
     setNodes(populateNodes());
     recursiveBacktracking(nodes, setNodes);
   };
+
+  useEffect(() => {
+    setNodes(populateNodes());
+    if (currentMazeAlgorithm === "Recursive division") {
+      recursiveBacktracking(nodes, setNodes);
+    }
+  }, [currentMazeAlgorithm]);
 
   return (
     <div
