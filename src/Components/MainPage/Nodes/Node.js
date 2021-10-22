@@ -85,14 +85,15 @@ const Node = ({
   };
   return (
     <div
+      id={`node-${row}-${column}`}
       onMouseDown={handleStartDrawing}
       onMouseEnter={handleOnHover}
       onMouseLeave={handleOnLeave}
       className={`${node.type === "clear" ? styles.node : ""} ${
-        node.type === "wall" ? styles.wall : ""
+        node.type === "wall" || node.type === "visited" ? styles.wall : ""
       } ${node.type === "start" ? styles.start : ""}${
         node.type === "end" ? styles.end : ""
-      } ${node.type === "visited" ? styles.visited : ""}`}
+      } `}
     >
       {/* {node.id} */}
     </div>

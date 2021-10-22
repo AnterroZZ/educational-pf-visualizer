@@ -8,3 +8,11 @@
   display: grid;
   grid-template-columns: repeat(51, 1fr);
 }
+
+.node {
+  border: 1px #b6b6b6 solid;
+  /* aspect-ratio: 1; */
+  cursor: pointer;
+  /* aspect-ratio: 1; */
+  animation: grow4 0.5s linear;
+}

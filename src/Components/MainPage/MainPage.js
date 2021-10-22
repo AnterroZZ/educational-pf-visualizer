@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useControls } from "../Contex/ControlsContext";
 import { recursiveBacktracking } from "../mazes/recursiveBacktracking";
 import { useAlgorithm } from "../Contex/AlgorithmsContext";
+import { recursive } from "../mazes/recursive";
 
 // Node types are: clear, wall, start, end, visited
 function singleNode(id, row, column) {
@@ -23,8 +24,8 @@ export const populateNodes = () => {
     let currentRow = [];
     for (let column = 0; column < 51; column++) {
       const node = singleNode(row * 50 + column, row, column);
-      if (column === 10 && row === 10) node.type = "start";
-      if (column === 40 && row === 10) node.type = "end";
+      if (column === 11 && row === 11) node.type = "start";
+      if (column === 39 && row === 11) node.type = "end";
       currentRow.push(node);
     }
     nodes.push(currentRow);
@@ -54,13 +55,52 @@ const MainPage = () => {
 
   const generateMaze = () => {
     setNodes(populateNodes());
-    recursiveBacktracking(nodes, setNodes);
+    allWalls();
+    const stack = recursive(nodes);
+    // const stack = recursiveBacktracking(nodes, setNodes);
+    console.log(stack);
+    // animate(stack);
+  };
+
+  const allWalls = () => {
+    let newNodes = nodes.slice();
+    for (let row = 0; row < 21; row++) {
+      for (let column = 0; column < 51; column++) {
+        const currentNode = newNodes[row][column];
+        if (!(currentNode.type === "start" || currentNode.type === "end")) {
+          newNodes[row][column] = { ...nodes[row][column], type: "wall" };
+        }
+      }
+    }
+
+    setNodes(newNodes);
+  };
+
+  const animate = (stack) => {
+    const newNodes = nodes.slice();
+    stack.map((node, indx) => {
+      // setTimeout(() => {
+      //   document.getElementById(
+      //     `node-${node.node.row}-${node.node.column}`
+      //   ).className = `${styles.node}`;
+      //   newNodes[node.row][node.column].type = "clear";
+      // }, indx * 50);
+      console.log(node);
+      // newNodes[node.row][node.column].type = "clear";
+    });
+
+    setNodes(newNodes);
   };
 
   useEffect(() => {
     setNodes(populateNodes());
     if (currentMazeAlgorithm === "Recursive division") {
-      recursiveBacktracking(nodes, setNodes);
+      //Make everything a wall
+
+      //Return a stack for visited nodes (base case scenario nodes ) -remember about start and end
+
+      //Animate and set type after
+      generateMaze(nodes, setNodes);
     }
   }, [currentMazeAlgorithm]);
 

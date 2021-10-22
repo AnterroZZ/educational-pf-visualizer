@@ -6,9 +6,8 @@ function Neighbour(row, column) {
     column: column,
   };
 }
-export async function recursiveBacktracking(nodes, setNodes) {
+export function recursiveBacktracking(nodes, setNodes) {
   //Walls around grid
-  setNodes(populateNodes());
   const searchNodes = [];
   setNodes(setNeighbours(nodes));
   for (let row = 0; row < 21; row++) {
@@ -26,20 +25,25 @@ export async function recursiveBacktracking(nodes, setNodes) {
           setNodes(updateNodes(nodes, column, row, "wall", "clear"));
         }
         if (isMazeNode(row, column)) searchNodes.push(nodes[row][column]);
-      }
+      } else
+        setNodes(
+          updateNodes(nodes, column, row, nodes[row][column].type, "start")
+        );
     }
   }
 
   const startingNode =
     searchNodes[Math.floor(Math.random() * searchNodes.length)];
-
-  recursiveBacktrackingIterative(startingNode, nodes, setNodes);
+  console.log("SIEMA");
+  return recursiveBacktrackingIterative(startingNode, nodes, setNodes);
 }
 
 const recursiveBacktrackingIterative = (startingNode, nodes, setNodes) => {
   const stack = [];
   const stack2 = [];
+  const stack3 = [];
   markAsVisited(startingNode.row, startingNode.column, nodes, setNodes, true);
+  stack3.push(startingNode);
   stack.push(startingNode);
   while (stack.length > 0) {
     let currentNode = stack.pop();
@@ -49,15 +53,19 @@ const recursiveBacktrackingIterative = (startingNode, nodes, setNodes) => {
     });
     if (unvisited.length > 0) {
       stack.push(currentNode);
-      let next = unvisited[Math.floor(Math.random() * unvisited.length)];
-      stack2.push(deleteWallBetween(currentNode, next, nodes, setNodes));
-      markAsVisited(next.row, next.column, nodes, setNodes, true);
-      stack.push(nodes[next.row][next.column]);
+      let nextNode = unvisited[Math.floor(Math.random() * unvisited.length)];
+      stack3.push(deleteWallBetween(currentNode, nextNode, nodes, setNodes));
+      markAsVisited(nextNode.row, nextNode.column, nodes, setNodes, true);
+      stack3.push(nextNode);
+
+      stack.push(nodes[nextNode.row][nextNode.column]);
     } else {
       stack2.push(currentNode);
     }
   }
-  markAsUnvisited(stack2, nodes, setNodes);
+  // console.log(stack2);
+  // markAsUnvisited(stack2, nodes, setNodes);
+  return stack3;
 };
 
 const deleteWallBetween = (curr, next, nodes, setNodes) => {
@@ -78,9 +86,13 @@ const deleteWallBetween = (curr, next, nodes, setNodes) => {
     foundCol = curr.column - 1;
   }
   const foundNode = nodes[foundRow][foundCol];
-  const newFoundNode = { ...foundNode, type: "visited", prevType: "clear" };
-  newNodes[foundRow][foundCol] = newFoundNode;
-  setNodes(newNodes);
+  const newFoundNode = {
+    ...foundNode,
+    type: "visited",
+    prevType: foundNode.type,
+  };
+  nodes[foundRow][foundCol] = newFoundNode;
+  // setNodes(newNodes);
   return newFoundNode;
 };
 
@@ -88,7 +100,20 @@ const markAsUnvisited = (stack, nodes, setNodes) => {
   const newNodes = nodes.slice();
   stack.map((node) => {
     const currNode = nodes[node.row][node.column];
-    const newNode = { ...currNode, type: "clear", prevType: "clear" };
+    let newNode;
+    if (currNode.prevType === "start" || currNode.prevType === "end") {
+      newNode = {
+        ...currNode,
+        type: currNode.prevType,
+        prevType: "clear",
+      };
+    } else
+      newNode = {
+        ...currNode,
+        type: "clear",
+        prevType: currNode.type,
+      };
+
     newNodes[node.row][node.column] = newNode;
   });
 
@@ -97,13 +122,10 @@ const markAsUnvisited = (stack, nodes, setNodes) => {
 const markAsVisited = (row, column, nodes, setNodes) => {
   const newNodes = nodes.slice();
   const currNode = nodes[row][column];
-  const newNode = { ...currNode, type: "visited", prevType: "clear" };
-  newNodes[row][column] = newNode;
-  setNodes(newNodes);
-};
 
-const sleep = (ms) => {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+  const newNode = { ...currNode, type: "visited", prevType: currNode.type };
+  nodes[row][column] = newNode;
+  // setNodes(newNodes);
 };
 
 const updateNodes = (nodes, col, row, type, prevType = type) => {
