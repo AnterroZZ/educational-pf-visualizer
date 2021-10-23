@@ -20,14 +20,10 @@ export function recursive(nodes) {
 
   while (algoStack.length > 0) {
     let currentNode = algoStack.pop();
-    console.log("Curr node type: ", currentNode.type);
-    console.log(
-      "Curr node type (algo): ",
-      algoNodes[currentNode.row][currentNode.column].type
+    const unvisited = currentNode.neighbours.filter(
+      (neighbour) =>
+        algoNodes[neighbour.row][neighbour.column].type !== "visited"
     );
-    const unvisited = currentNode.neighbours.filter((neighbour) => {
-      return algoNodes[neighbour.row][neighbour.column].type !== "visited";
-    });
 
     if (unvisited.length > 0) {
       const neighbour = randomOne(unvisited);
@@ -40,12 +36,19 @@ export function recursive(nodes) {
       algoNodes = newParams.nodes;
       algoStack.push(newParams.newNode);
     } else {
-      nodesOrder.push(markAsVisited(currentNode));
-      if (algoStack.length !== 0) {
-        const previousNode = algoStack.pop();
-        const wallNode = findNodeBetween(previousNode, currentNode, algoNodes);
-        nodesOrder.push(markAsVisited(wallNode));
-        algoStack.push(previousNode);
+      //In future to be controlled by variable if visited nodes want to be seen by user
+      if (true) {
+        nodesOrder.push(markAsVisited(currentNode));
+        if (algoStack.length !== 0) {
+          const previousNode = algoStack.pop();
+          const wallNode = findNodeBetween(
+            previousNode,
+            currentNode,
+            algoNodes
+          );
+          nodesOrder.push(markAsVisited(wallNode));
+          algoStack.push(previousNode);
+        }
       }
     }
   }

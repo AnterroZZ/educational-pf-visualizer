@@ -10,8 +10,8 @@ const Node = ({
   column,
   setNodes,
   nodes,
-  generateMaze,
   updateNodes,
+  isInBlockedState,
 }) => {
   const handleOnHover = () => {
     if (isInDrawingMode) {
@@ -44,10 +44,6 @@ const Node = ({
     event.preventDefault();
     console.log(node);
     setIsInDrawingMode(true);
-    if (node.id === 0) {
-      generateMaze();
-      return;
-    }
     switch (node.type) {
       case "clear":
         setDrawingType("wall");
@@ -79,14 +75,15 @@ const Node = ({
     if (isInDrawingMode) {
       if (drawingType === "start" || drawingType === "end") {
         setNodes(updateNodes(nodes, column, row, node.prevType));
-        // setSingleNode({ ...singleNode, type: singleNode.prevType });
       }
     }
   };
   return (
     <div
       id={`node-${row}-${column}`}
-      onMouseDown={handleStartDrawing}
+      onMouseDown={(e) => {
+        if (!isInBlockedState) handleStartDrawing(e);
+      }}
       onMouseEnter={handleOnHover}
       onMouseLeave={handleOnLeave}
       className={`${node.type === "clear" ? styles.node : ""} ${

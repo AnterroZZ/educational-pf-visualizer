@@ -45,7 +45,7 @@ const Header = () => {
 
           <DropdownItem
             onClick={handleMazeChosen}
-            name={"Recursive division"}
+            name={"Recursive backtracking"}
           />
         </DropdownMenu>
       </Picker>
