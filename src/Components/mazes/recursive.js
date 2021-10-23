@@ -6,44 +6,58 @@ function Neighbour(row, column) {
 }
 
 export function recursive(nodes) {
-  const algoNodes = setNeighbours(nodes.slice());
+  const newNodeee = JSON.parse(JSON.stringify(nodes));
+  let algoNodes = setNeighbours(newNodeee);
   const startingNode = pickRandomFirstNode(algoNodes);
   const nodesOrder = [];
   const algoStack = [];
 
-  markAsFound(startingNode.row, startingNode.column, algoNodes);
-  nodesOrder.push(markAsFound(startingNode));
-  algoStack.push(startingNode);
+  markAsFound(startingNode.row, startingNode.column);
+  const newStarterParams = notifyVisited(startingNode, algoNodes);
+  algoNodes = newStarterParams.nodes;
+  nodesOrder.push(markAsFound(newStarterParams.newNode));
+  algoStack.push(newStarterParams.newNode);
 
   while (algoStack.length > 0) {
     let currentNode = algoStack.pop();
+    console.log("Curr node type: ", currentNode.type);
+    console.log(
+      "Curr node type (algo): ",
+      algoNodes[currentNode.row][currentNode.column].type
+    );
+    const unvisited = currentNode.neighbours.filter((neighbour) => {
+      return algoNodes[neighbour.row][neighbour.column].type !== "visited";
+    });
 
-    if (currentNode.neighbours.length > 0) {
-      const neighbour = randomOne(currentNode.neighbours);
-      const restOfNeighbours = currentNode.neighbours.filter(
-        (curr) => curr != neighbour
-      );
-      currentNode = { ...currentNode, neighbours: restOfNeighbours };
-      console.log(neighbour);
-      console.log(currentNode.neighbours);
+    if (unvisited.length > 0) {
+      const neighbour = randomOne(unvisited);
       algoStack.push(currentNode);
       const nextNode = algoNodes[neighbour.row][neighbour.column];
       const wallNode = findNodeBetween(currentNode, nextNode, algoNodes);
       nodesOrder.push(markAsFound(wallNode));
       nodesOrder.push(markAsFound(nextNode));
-      algoStack.push(nextNode);
+      const newParams = notifyVisited(nextNode, algoNodes);
+      algoNodes = newParams.nodes;
+      algoStack.push(newParams.newNode);
     } else {
-      const previousNode = algoStack.pop();
-      const wallNode = findNodeBetween(previousNode, currentNode, algoNodes);
       nodesOrder.push(markAsVisited(currentNode));
-      nodesOrder.push(markAsVisited(wallNode));
-      algoStack.push(previousNode);
+      if (algoStack.length !== 0) {
+        const previousNode = algoStack.pop();
+        const wallNode = findNodeBetween(previousNode, currentNode, algoNodes);
+        nodesOrder.push(markAsVisited(wallNode));
+        algoStack.push(previousNode);
+      }
     }
   }
 
   return nodesOrder;
 }
 
+const notifyVisited = (node, nodes) => {
+  let newNode = { ...node, type: "visited" };
+  nodes[node.row][node.column] = newNode;
+  return { nodes, newNode };
+};
 const findNodeBetween = (nodeOne, nodeTwo, nodes) => {
   let foundRow = 0;
   let foundColumn = 0;
@@ -94,11 +108,11 @@ const addNeighbours = (row, col, maxRow, maxCol) => {
   return neighbours;
 };
 
-const markAsFound = (node) => {
+const markAsFound = (node, nodes) => {
   return { node: node, type: "clear" };
 };
 
-const markAsVisited = (node) => {
+const markAsVisited = (node, nodes) => {
   return { node: node, type: "visited" };
 };
 

@@ -56,13 +56,17 @@ const MainPage = () => {
   const generateMaze = () => {
     setNodes(populateNodes());
     allWalls();
-    const stack = recursive(nodes);
-    // const stack = recursiveBacktracking(nodes, setNodes);
-    console.log(stack);
-    // animate(stack);
+    const newNodes = nodes.slice();
+    const stack = recursive(newNodes);
+
+    //TODO: Add block during on drawing during animating phase
+    animateMazeStack(stack);
   };
 
   const allWalls = () => {
+    // TODO: Animation of walls
+    // TODO: Don't let user drag nodes outside the screen
+    // TODO: Refactor code
     let newNodes = nodes.slice();
     for (let row = 0; row < 21; row++) {
       for (let column = 0; column < 51; column++) {
@@ -76,20 +80,44 @@ const MainPage = () => {
     setNodes(newNodes);
   };
 
-  const animate = (stack) => {
+  const animateMazeStack = (stack) => {
+    const newNodesAnim = nodes.slice();
     const newNodes = nodes.slice();
-    stack.map((node, indx) => {
-      // setTimeout(() => {
-      //   document.getElementById(
-      //     `node-${node.node.row}-${node.node.column}`
-      //   ).className = `${styles.node}`;
-      //   newNodes[node.row][node.column].type = "clear";
-      // }, indx * 50);
-      console.log(node);
-      // newNodes[node.row][node.column].type = "clear";
-    });
 
-    setNodes(newNodes);
+    // TODO: Add animation speed variable in algorithm (Add maze context - mazeAlgoContext?)
+    const animationSpeed = 10;
+    stack.map((currNode, indx) => {
+      const { node, type } = currNode;
+      const nodeType = newNodesAnim[node.row][node.column].type;
+      if (animationSpeed === 0) {
+        if (!(nodeType === "start" || nodeType === "end")) {
+          newNodes[node.row][node.column].type = "clear";
+          setNodes(newNodes);
+        }
+      } else {
+        setTimeout(() => {
+          if (!(nodeType === "start" || nodeType === "end")) {
+            if (type === "clear") {
+              document.getElementById(
+                `node-${node.row}-${node.column}`
+              ).className = `${styles.node}`;
+              newNodesAnim[node.row][node.column].type = "clear";
+            } else {
+              document.getElementById(
+                `node-${node.row}-${node.column}`
+              ).className = `${styles.visited}`;
+              newNodesAnim[node.row][node.column].type = "visited";
+            }
+            newNodes[node.row][node.column].type = "clear";
+          }
+          if (stack.length === indx + 1) {
+            setTimeout(() => {
+              setNodes(newNodes);
+            }, 500);
+          }
+        }, indx * animationSpeed);
+      }
+    });
   };
 
   useEffect(() => {

@@ -16,3 +16,8 @@
   /* aspect-ratio: 1; */
   animation: grow4 0.5s linear;
 }
+
+.visited {
+  background: #1ce5ff;
+  border: 1px #1bb6ca solid;
+}
