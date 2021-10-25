@@ -1,9 +1,10 @@
 import Node from "./Nodes/Node";
 import styles from "./MainPage.module.css";
+import nodeStyles from "./Nodes/Node.module.css";
 import { useEffect, useState } from "react";
 import { useControls } from "../Contex/ControlsContext";
 import { useAlgorithm } from "../Contex/AlgorithmsContext";
-import { recursive } from "../mazes/recursive";
+import { recursive } from "../../algorithms/mazes/recursive";
 
 // Node types are: clear, wall, start, end, visited
 function singleNode(id, row, column) {
@@ -14,6 +15,7 @@ function singleNode(id, row, column) {
     type: "clear",
     prevType: "clear",
     neighbours: [],
+    distance: Infinity,
   };
 }
 
@@ -65,7 +67,6 @@ const MainPage = () => {
 
   const generateMaze = (currentMazeAlgorithm, nodes) => {
     let stack = [];
-    allWalls();
     switch (currentMazeAlgorithm) {
       case "Recursive backtracking":
         stack = recursive(nodes);
@@ -74,27 +75,27 @@ const MainPage = () => {
         console.log("No such maze generating algo!");
     }
 
-    animateMazeStack(stack);
-  };
-
-  const allWalls = () => {
-    let newNodes = nodes.slice();
-    for (let row = 0; row < 21; row++) {
-      for (let column = 0; column < 51; column++) {
-        const currentNode = newNodes[row][column];
-        if (!(currentNode.type === "start" || currentNode.type === "end")) {
-          newNodes[row][column] = { ...nodes[row][column], type: "wall" };
-        }
-      }
-    }
-
-    setNodes(newNodes);
+    // animateMazeStack(stack);
+    alternateAnimate(stack);
   };
 
   const animateMazeStack = (stack) => {
     setIsInBlockedState(true);
-    const newNodesAnim = nodes.slice();
-    const newNodes = nodes.slice();
+    const newNodesAnim = JSON.parse(JSON.stringify(nodes));
+    const newNodes = JSON.parse(JSON.stringify(nodes));
+
+    //Transform all nodes to wall type
+    for (let row = 0; row < nodes.length; row++) {
+      for (let column = 0; column < nodes[0].length; column++) {
+        const currentNode = newNodes[row][column];
+        if (!(currentNode.type === "start" || currentNode.type === "end")) {
+          document.getElementById(
+            `node-${currentNode.row}-${currentNode.column}`
+          ).className = `${nodeStyles.wall}`;
+          newNodes[row][column] = { ...nodes[row][column], type: "wall" };
+        }
+      }
+    }
 
     const mazeAnimationSpeed = 10;
     stack.forEach((currNode, indx) => {
@@ -112,12 +113,12 @@ const MainPage = () => {
             if (type === "clear") {
               document.getElementById(
                 `node-${node.row}-${node.column}`
-              ).className = `${styles.node}`;
+              ).className = `${nodeStyles.node}`;
               newNodesAnim[node.row][node.column].type = "clear";
             } else {
               document.getElementById(
                 `node-${node.row}-${node.column}`
-              ).className = `${styles.visited}`;
+              ).className = `${nodeStyles.visited}`;
               newNodesAnim[node.row][node.column].type = "visited";
             }
             newNodes[node.row][node.column].type = "clear";
@@ -128,11 +129,54 @@ const MainPage = () => {
               setIsInBlockedState(false);
             }, 500);
           }
-        }, indx * mazeAnimationSpeed);
+        }, 1000 + indx * mazeAnimationSpeed);
       }
     });
   };
 
+  const alternateAnimate = (stack) => {
+    setIsInBlockedState(true);
+    const newNodes = JSON.parse(JSON.stringify(nodes)).flat();
+    const nooods = JSON.parse(JSON.stringify(nodes));
+    const onlyWalls = newNodes.filter((arrNode) => {
+      let x = true;
+      stack.forEach((stackElem) => {
+        const { node } = stackElem;
+        if (node.id === arrNode.id) x = false;
+      });
+      return x;
+    });
+
+    for (let row = 0; row < nodes.length; row++) {
+      for (let column = 0; column < nodes[0].length; column++) {
+        const currentNode = nooods[row][column];
+        if (!(currentNode.type === "start" || currentNode.type === "end")) {
+          document.getElementById(
+            `node-${currentNode.row}-${currentNode.column}`
+          ).className = `${nodeStyles.node}`;
+          nooods[row][column] = { ...nodes[row][column], type: "clear" };
+        }
+      }
+    }
+
+    onlyWalls.forEach((currNode, indx) => {
+      setTimeout(() => {
+        if (!(currNode.type === "start" || currNode.type === "end")) {
+          document.getElementById(
+            `node-${currNode.row}-${currNode.column}`
+          ).className = `${nodeStyles.wall}`;
+
+          nooods[currNode.row][currNode.column].type = "wall";
+        }
+        if (stack.length === indx + 1) {
+          setTimeout(() => {
+            setNodes(nooods);
+            setIsInBlockedState(false);
+          }, 500);
+        }
+      }, indx * 5);
+    });
+  };
   return (
     <div
       onMouseUp={() => setIsInDrawingMode(false)}

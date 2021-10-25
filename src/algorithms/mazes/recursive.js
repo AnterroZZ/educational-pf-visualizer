@@ -37,7 +37,7 @@ export function recursive(nodes) {
       algoStack.push(newParams.newNode);
     } else {
       //In future to be controlled by variable if visited nodes want to be seen by user
-      if (true) {
+      if (false) {
         nodesOrder.push(markAsVisited(currentNode));
         if (algoStack.length !== 0) {
           const previousNode = algoStack.pop();
