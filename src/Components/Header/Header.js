@@ -4,9 +4,15 @@ import styles from "./Header.module.css";
 import DropdownMenu from "./HeaderComponents/DropdownMenu/DropdownMenu";
 import DropdownItem from "./HeaderComponents/DropdownItem/DropdownItem";
 import { useAlgorithm } from "../Contex/AlgorithmsContext";
+import Button from "../UI/Button/Button";
 
 const Header = () => {
-  const { setCurrentAlgorithm, setCurrentMazeAlgorithm } = useAlgorithm();
+  const {
+    setCurrentAlgorithm,
+    setCurrentMazeAlgorithm,
+    currentAnimationStyle,
+    setCurrentAnimationStyle,
+  } = useAlgorithm();
 
   const handleAlgoritmsChosen = (name) => {
     setCurrentAlgorithm(name);
@@ -16,6 +22,13 @@ const Header = () => {
   const handleMazeChosen = (name) => {
     setCurrentMazeAlgorithm(name);
     console.log(name);
+  };
+
+  const handleOnAnimationChange = (event) => {
+    currentAnimationStyle === "Classic"
+      ? setCurrentAnimationStyle("Educational")
+      : setCurrentAnimationStyle("Classic");
+    event.stopPropagation();
   };
   return (
     <div className={styles.wraper}>
@@ -41,6 +54,12 @@ const Header = () => {
       <h3>/</h3>
       <Picker name="Generate maze">
         <DropdownMenu>
+          <p className={styles.subtitle}>Animation style</p>
+          <Button
+            text={currentAnimationStyle}
+            onClick={handleOnAnimationChange}
+          />
+          <hr />
           <DropdownItem onClick={handleMazeChosen} name={"Random maze"} />
 
           <DropdownItem

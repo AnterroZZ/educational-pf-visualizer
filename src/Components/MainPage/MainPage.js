@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useControls } from "../Contex/ControlsContext";
 import { useAlgorithm } from "../Contex/AlgorithmsContext";
 import { recursive } from "../../algorithms/mazes/recursive";
+import { randomMaze } from "../../algorithms/mazes/random";
 
 // Node types are: clear, wall, start, end, visited
 function singleNode(id, row, column) {
@@ -49,15 +50,23 @@ const MainPage = () => {
   const [isInBlockedState, setIsInBlockedState] = useState(false);
   const [drawingType, setDrawingType] = useState("");
   const { clear } = useControls();
-  const { currentMazeAlgorithm } = useAlgorithm();
+  const {
+    currentMazeAlgorithm,
+    currentAnimationStyle,
+    setCurrentMazeAlgorithm,
+  } = useAlgorithm();
 
   useEffect(() => {
     setNodes(populateNodes());
   }, [clear]);
 
   useEffect(() => {
+    setCurrentMazeAlgorithm("Default");
     switch (currentMazeAlgorithm) {
       case "Recursive backtracking":
+        generateMaze(currentMazeAlgorithm, nodes);
+        break;
+      case "Random maze":
         generateMaze(currentMazeAlgorithm, nodes);
         break;
       default:
@@ -71,15 +80,19 @@ const MainPage = () => {
       case "Recursive backtracking":
         stack = recursive(nodes);
         break;
+      case "Random maze":
+        stack = randomMaze(nodes);
+        break;
       default:
         console.log("No such maze generating algo!");
     }
 
-    // animateMazeStack(stack);
-    alternateAnimate(stack);
+    if (currentAnimationStyle === "Classic") {
+      classicMazeAnimation(stack);
+    } else eduMazeAnimation(stack);
   };
 
-  const animateMazeStack = (stack) => {
+  const eduMazeAnimation = (stack) => {
     setIsInBlockedState(true);
     const newNodesAnim = JSON.parse(JSON.stringify(nodes));
     const newNodes = JSON.parse(JSON.stringify(nodes));
@@ -134,7 +147,7 @@ const MainPage = () => {
     });
   };
 
-  const alternateAnimate = (stack) => {
+  const classicMazeAnimation = (stack) => {
     setIsInBlockedState(true);
     const newNodes = JSON.parse(JSON.stringify(nodes)).flat();
     const nooods = JSON.parse(JSON.stringify(nodes));
@@ -168,7 +181,7 @@ const MainPage = () => {
 
           nooods[currNode.row][currNode.column].type = "wall";
         }
-        if (stack.length === indx + 1) {
+        if (onlyWalls.length === indx + 1) {
           setTimeout(() => {
             setNodes(nooods);
             setIsInBlockedState(false);

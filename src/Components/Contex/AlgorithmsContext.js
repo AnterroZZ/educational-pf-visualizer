@@ -5,6 +5,7 @@ export const AlgorithmsCont = createContext();
 export const AlgorithmsContext = (props) => {
   const [currentAlgorithm, setCurrentAlgorithm] = useState("");
   const [currentMazeAlgorithm, setCurrentMazeAlgorithm] = useState("");
+  const [currentAnimationStyle, setCurrentAnimationStyle] = useState("Classic");
   return (
     <AlgorithmsCont.Provider
       value={{
@@ -12,6 +13,8 @@ export const AlgorithmsContext = (props) => {
         setCurrentAlgorithm,
         currentMazeAlgorithm,
         setCurrentMazeAlgorithm,
+        currentAnimationStyle,
+        setCurrentAnimationStyle,
       }}
     >
       {props.children}
