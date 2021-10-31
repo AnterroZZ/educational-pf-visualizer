@@ -6,6 +6,7 @@ import { useControls } from "../Contex/ControlsContext";
 import { useAlgorithm } from "../Contex/AlgorithmsContext";
 import { recursive } from "../../algorithms/mazes/recursive";
 import { randomMaze } from "../../algorithms/mazes/random";
+import { dijkstra } from "../../algorithms/pathfinding/dijkstra";
 
 // Node types are: clear, wall, start, end, visited
 function singleNode(id, row, column) {
@@ -44,6 +45,21 @@ const updateNodes = (nodes, col, row, type, prevType = type) => {
   return newNodes;
 };
 
+const clearPaths = (allNodes) => {
+  const workOnNodes = JSON.parse(JSON.stringify(allNodes));
+  for (let row = 0; row < workOnNodes.length; row++) {
+    for (let column = 0; column < workOnNodes[0].length; column++) {
+      const currentNode = workOnNodes[row][column];
+      if (currentNode.type === "visited" || currentNode.type === "path") {
+        console.log("chaning type");
+        workOnNodes[row][column] = { ...currentNode, type: "clear" };
+      }
+    }
+  }
+
+  return workOnNodes;
+};
+
 const MainPage = () => {
   const [nodes, setNodes] = useState(populateNodes());
   const [isInDrawingMode, setIsInDrawingMode] = useState(false);
@@ -54,6 +70,8 @@ const MainPage = () => {
     currentMazeAlgorithm,
     currentAnimationStyle,
     setCurrentMazeAlgorithm,
+    currentAlgorithm,
+    setCurrentAlgorithm,
   } = useAlgorithm();
 
   useEffect(() => {
@@ -73,6 +91,61 @@ const MainPage = () => {
         console.log("No such maze generating algo!");
     }
   }, [currentMazeAlgorithm]);
+
+  useEffect(() => {
+    setNodes(clearPaths(nodes));
+    switch (currentAlgorithm) {
+      case "Dijkstra's algorithm":
+        const dijkstraNodes = dijkstra(nodes);
+        console.log(dijkstraNodes);
+        animateAlgo(dijkstraNodes);
+    }
+    setCurrentAlgorithm("Default");
+  }, [currentAlgorithm]);
+
+  const animateAlgo = (stack) => {
+    setIsInBlockedState(true);
+    const { nodesOrder, pathOrder } = stack;
+    console.log(nodesOrder);
+    const newNodes = JSON.parse(JSON.stringify(nodes));
+    nodesOrder.forEach((currNode, indx) => {
+      setTimeout(() => {
+        document.getElementById(
+          `node-${currNode.row}-${currNode.column}`
+        ).className = `${nodeStyles.visited}`;
+
+        newNodes[currNode.row][currNode.column] = {
+          ...currNode,
+          type: "visited",
+        };
+        if (nodesOrder.length === indx + 1) {
+          setTimeout(() => {
+            setNodes(newNodes);
+            animatePath(pathOrder, newNodes);
+          }, 500);
+        }
+      }, indx * 1);
+    });
+  };
+
+  const animatePath = (stack, currentNodes) => {
+    const nooods = JSON.parse(JSON.stringify(currentNodes));
+    stack.forEach((currNode, indx) => {
+      setTimeout(() => {
+        document.getElementById(
+          `node-${currNode.row}-${currNode.column}`
+        ).className = `${nodeStyles.path}`;
+
+        nooods[currNode.row][currNode.column].type = "path";
+        if (stack.length === indx + 1) {
+          setTimeout(() => {
+            setNodes(nooods);
+            setIsInBlockedState(false);
+          }, 500);
+        }
+      }, indx * 20);
+    });
+  };
 
   const generateMaze = (currentMazeAlgorithm, nodes) => {
     let stack = [];

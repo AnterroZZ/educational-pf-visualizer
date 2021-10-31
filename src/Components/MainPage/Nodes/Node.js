@@ -18,13 +18,21 @@ const Node = ({
       let node = nodes[row][column];
       switch (drawingType) {
         case "wall":
-          if (node.type === "clear") {
-            setNodes(updateNodes(nodes, column, row, "wall", "clear"));
+          if (
+            node.type === "clear" ||
+            node.type === "visited" ||
+            node.type === "path"
+          ) {
+            setNodes(updateNodes(nodes, column, row, "wall", node.type));
           }
           break;
         case "clear":
           if (node.type === "wall") {
-            setNodes(updateNodes(nodes, column, row, "clear", "wall"));
+            node.prevType === "wall"
+              ? setNodes(updateNodes(nodes, column, row, "clear", "wall"))
+              : setNodes(
+                  updateNodes(nodes, column, row, node.prevType, "wall")
+                );
           }
           break;
         case "start":
@@ -46,14 +54,18 @@ const Node = ({
     setIsInDrawingMode(true);
     switch (node.type) {
       case "clear":
+      case "visited":
+      case "path":
         setDrawingType("wall");
-        setNodes(updateNodes(nodes, column, row, "wall", "clear"));
+        setNodes(updateNodes(nodes, column, row, "wall", node.type));
 
         console.log("Drawing type set to wall");
         break;
       case "wall":
         setDrawingType("clear");
-        setNodes(updateNodes(nodes, column, row, "clear", "wall"));
+        node.prevType === "wall"
+          ? setNodes(updateNodes(nodes, column, row, "clear", "wall"))
+          : setNodes(updateNodes(nodes, column, row, node.prevType, "wall"));
 
         console.log("Drawing type set to clear");
         break;
@@ -87,7 +99,9 @@ const Node = ({
       onMouseEnter={handleOnHover}
       onMouseLeave={handleOnLeave}
       className={`${node.type === "clear" ? styles.node : ""} ${
-        node.type === "wall" || node.type === "visited" ? styles.wall : ""
+        node.type === "wall" ? styles.wall : ""
+      }  ${node.type === "visited" ? styles.visited : ""} ${
+        node.type === "path" ? styles.path : ""
       } ${node.type === "start" ? styles.start : ""}${
         node.type === "end" ? styles.end : ""
       } `}

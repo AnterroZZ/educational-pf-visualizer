@@ -17,6 +17,12 @@
   border: 1px #1bb6ca solid;
 }
 
+.path {
+  background: #fff022;
+  border: 1px #ddd01f solid;
+  animation: pathAnim 0.7s linear;
+}
+
 .start {
   background: rgb(41, 255, 41);
   border: 1px rgb(36, 201, 36) solid;
@@ -40,6 +46,23 @@
     transform: scale(1);
   }
 }
+
+@keyframes pathAnim {
+  0% {
+    transform: scale(0.5);
+  }
+
+  30% {
+    transform: scale(1.2);
+    background: #1ef637;
+  }
+
+  100% {
+    transform: scale(1);
+    background: #ddd01f;
+  }
+}
+
 @keyframes grow2 {
   0% {
     transform: scale(1);
