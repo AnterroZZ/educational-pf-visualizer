@@ -26,3 +26,16 @@ hr {
   margin: 2px 20px;
   font-size: 0.9rem;
 }
+
+.currentAlgo {
+  color: rgb(253, 8, 8);
+}
+
+.clearButton {
+  padding: 5px;
+  cursor: pointer;
+}
+
+.clearButton:hover {
+  text-shadow: 0px 0px 1px black;
+}

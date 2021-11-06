@@ -59,6 +59,7 @@ const MainPage = () => {
   const { clear } = useControls();
   const {
     currentMazeAlgorithm,
+    setCurrentMazeAlgorithm,
     currentAnimationStyle,
     currentAlgorithm,
     setCurrentAlgorithm,
@@ -67,15 +68,20 @@ const MainPage = () => {
 
   useEffect(() => {
     setNodes(populateNodes());
-    setCurrentAlgorithm("Default");
+    setCurrentAlgorithm("None");
   }, [clear]);
 
+  //Generating maze
   useEffect(() => {
     switch (currentMazeAlgorithm) {
       case "Recursive backtracking":
+        setCurrentMazeAlgorithm("Default");
+        setCurrentAlgorithm("None");
         generateMaze(currentMazeAlgorithm, nodes);
         break;
       case "Random maze":
+        setCurrentMazeAlgorithm("Default");
+        setCurrentAlgorithm("None");
         generateMaze(currentMazeAlgorithm, nodes);
         break;
       default:
@@ -83,6 +89,7 @@ const MainPage = () => {
     }
   }, [currentMazeAlgorithm]);
 
+  //Executing pathfinding algorithms
   useEffect(() => {
     setNodes(clearPaths(nodes));
     switch (currentAlgorithm) {
@@ -92,10 +99,39 @@ const MainPage = () => {
     }
   }, [currentAlgorithm]);
 
+  const updateNodes = (nodes, col, row, type, prevType = type) => {
+    const newNodes = JSON.parse(JSON.stringify(nodes));
+    const node = nodes[row][col];
+    const newNode = { ...node, type: type, prevType: prevType };
+    newNodes[row][col] = newNode;
+    setNodes(newNodes);
+  };
+
+  const moveStartEnd = (row, col, prevRow, prevCol, type) => {
+    let copyOfNodes = JSON.parse(JSON.stringify(nodes));
+    const newNode = copyOfNodes[row][col];
+    const prevNode = copyOfNodes[prevRow][prevCol];
+    const newUpdatedNode = { ...newNode, type: type, prevType: newNode.type };
+    const prevUpdatedNode = { ...prevNode, type: prevNode.prevType };
+    copyOfNodes[row][col] = newUpdatedNode;
+    copyOfNodes[prevRow][prevCol] = prevUpdatedNode;
+    switch (currentAlgorithm) {
+      case "Dijkstra's algorithm":
+        copyOfNodes = clearPaths(copyOfNodes);
+        const dijkstraNodes = dijkstra(copyOfNodes);
+        animateAlgo(dijkstraNodes, copyOfNodes, 0);
+        break;
+      default:
+        setNodes(copyOfNodes);
+    }
+  };
+
   const animateAlgo = (stack, currentNodes, time) => {
     setIsInBlockedState(true);
     const { nodesOrder, pathOrder } = stack;
     const newNodes = JSON.parse(JSON.stringify(currentNodes));
+
+    //Used to move around end and start node
     if (time === 0) {
       nodesOrder.forEach((currNode, indx) => {
         document.getElementById(
@@ -130,33 +166,6 @@ const MainPage = () => {
           }
         }, time * indx);
       });
-  };
-
-  const updateNodes = (nodes, col, row, type, prevType = type) => {
-    const newNodes = JSON.parse(JSON.stringify(nodes));
-    const node = nodes[row][col];
-    const newNode = { ...node, type: type, prevType: prevType };
-    newNodes[row][col] = newNode;
-    setNodes(newNodes);
-  };
-
-  const moveStartEnd = (row, col, prevRow, prevCol, type) => {
-    let copyOfNodes = JSON.parse(JSON.stringify(nodes));
-    const newNode = copyOfNodes[row][col];
-    const prevNode = copyOfNodes[prevRow][prevCol];
-    const newUpdatedNode = { ...newNode, type: type, prevType: newNode.type };
-    const prevUpdatedNode = { ...prevNode, type: prevNode.prevType };
-    copyOfNodes[row][col] = newUpdatedNode;
-    copyOfNodes[prevRow][prevCol] = prevUpdatedNode;
-    switch (currentAlgorithm) {
-      case "Dijkstra's algorithm":
-        copyOfNodes = clearPaths(copyOfNodes);
-        const dijkstraNodes = dijkstra(copyOfNodes);
-        animateAlgo(dijkstraNodes, copyOfNodes, 0);
-        break;
-      default:
-        setNodes(copyOfNodes);
-    }
   };
 
   const animatePath = (stack, currentNodes, time) => {

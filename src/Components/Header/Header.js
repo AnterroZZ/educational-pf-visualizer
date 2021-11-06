@@ -6,6 +6,7 @@ import DropdownItem from "./HeaderComponents/DropdownItem/DropdownItem";
 import { useAlgorithm } from "../Contex/AlgorithmsContext";
 import Button from "../UI/Button/Button";
 import { useState } from "react";
+import { useControls } from "../Contex/ControlsContext";
 
 const Header = () => {
   const {
@@ -14,7 +15,9 @@ const Header = () => {
     currentAnimationStyle,
     setCurrentAnimationStyle,
     setAnimationSpeed,
+    currentAlgorithm,
   } = useAlgorithm();
+  const { setClear } = useControls();
   const [animationSpeedText, setAnimationSpeedText] = useState("Normal");
 
   const handleAlgoritmsChosen = (name) => {
@@ -92,7 +95,17 @@ const Header = () => {
         </DropdownMenu>
       </Picker>
       <h2 className={styles.divider}>/</h2>
-      <Controls />
+      {/* <Controls /> */}
+      <p
+        className={styles.clearButton}
+        onClick={() => setClear((prev) => !prev)}
+      >
+        Clear walls
+      </p>
+      <h2 className={styles.divider}>/</h2>
+      <p className={styles.currentAlgo}>
+        Current algorithm: {currentAlgorithm}
+      </p>
     </div>
   );
 };

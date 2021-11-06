@@ -33,5 +33,6 @@
   font-weight: 500;
 }
 .wraper:hover {
+  text-shadow: 0px 0px 1px black;
   cursor: pointer;
 }
