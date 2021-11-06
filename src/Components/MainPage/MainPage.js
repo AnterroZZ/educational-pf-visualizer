@@ -7,6 +7,7 @@ import { useAlgorithm } from "../Contex/AlgorithmsContext";
 import { recursive } from "../../algorithms/mazes/recursive";
 import { randomMaze } from "../../algorithms/mazes/random";
 import { dijkstra } from "../../algorithms/pathfinding/dijkstra";
+import { astar } from "../../algorithms/pathfinding/astar";
 
 // Node types are: clear, wall, start, end, visited
 function singleNode(id, row, column) {
@@ -92,10 +93,16 @@ const MainPage = () => {
   //Executing pathfinding algorithms
   useEffect(() => {
     setNodes(clearPaths(nodes));
+    const copyOfNodes = clearPaths(JSON.parse(JSON.stringify(nodes)));
     switch (currentAlgorithm) {
       case "Dijkstra's algorithm":
-        const dijkstraNodes = dijkstra(nodes);
-        animateAlgo(dijkstraNodes, nodes, 2);
+        const dijkstraNodes = dijkstra(copyOfNodes);
+        animateAlgo(dijkstraNodes, copyOfNodes, 2);
+        break;
+      case "A* search":
+        const astarNodes = astar(copyOfNodes);
+        animateAlgo(astarNodes, copyOfNodes, 4);
+        break;
     }
   }, [currentAlgorithm]);
 
@@ -120,6 +127,11 @@ const MainPage = () => {
         copyOfNodes = clearPaths(copyOfNodes);
         const dijkstraNodes = dijkstra(copyOfNodes);
         animateAlgo(dijkstraNodes, copyOfNodes, 0);
+        break;
+      case "A* search":
+        copyOfNodes = clearPaths(copyOfNodes);
+        const astarNodes = astar(copyOfNodes);
+        animateAlgo(astarNodes, copyOfNodes, 0);
         break;
       default:
         setNodes(copyOfNodes);
@@ -200,10 +212,10 @@ const MainPage = () => {
     let stack = [];
     switch (currentMazeAlgorithm) {
       case "Recursive backtracking":
-        stack = recursive(nodes);
+        stack = recursive(clearPaths(nodes));
         break;
       case "Random maze":
-        stack = randomMaze(nodes);
+        stack = randomMaze(clearPaths(nodes));
         break;
       default:
         console.log("No such maze generating algo!");
