@@ -5,7 +5,9 @@ export function astar(nodes) {
   const openList = [];
   const nodesOrder = [];
   let pathOrder = [];
+  let distance = 0;
   const closedList = [];
+  const startTime = performance.now();
   algoNodes[startingNode.row][startingNode.column] = {
     ...startingNode,
     distance: 0,
@@ -25,10 +27,11 @@ export function astar(nodes) {
 
     if (q.row === endingNode.row && q.column === endingNode.column) {
       pathOrder = findNodesOrderToStart(q.previous);
+      distance = q.distance;
       break;
     }
 
-    // if (q.type !== "start") nodesOrder.push(q);
+    if (q.type !== "start") nodesOrder.push(q);
 
     const neighbours = findNeighbours(q, algoNodes);
     if (neighbours.length !== 0) {
@@ -47,7 +50,7 @@ export function astar(nodes) {
             previous: q,
             type: "visited",
           };
-          nodesOrder.push(updatedNeighbour);
+          // nodesOrder.push(updatedNeighbour);
           openList.push(updatedNeighbour);
           algoNodes[neighbours[i].row][neighbours[i].column] = updatedNeighbour;
         } else if (neighbours[i].type === "end") {
@@ -72,7 +75,17 @@ export function astar(nodes) {
 
     closedList.push(q);
   }
-  return { nodesOrder, pathOrder };
+  const endTime = performance.now();
+  const timeTaken = endTime - startTime;
+  return {
+    nodesOrder,
+    pathOrder,
+    statistics: {
+      distance: distance,
+      numberOfVisited: nodesOrder.length,
+      timeTaken: timeTaken,
+    },
+  };
 }
 
 const findNodesOrderToStart = (finalNode) => {

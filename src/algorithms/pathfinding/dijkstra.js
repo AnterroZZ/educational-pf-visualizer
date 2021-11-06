@@ -4,7 +4,9 @@ export function dijkstra(nodes) {
   const priorityQueue = [];
   const nodesOrder = [];
   let pathOrder = [];
+  let distance = 0;
   let isNotFound = true;
+  const startTime = performance.now();
 
   algoNodes[startingNode.row][startingNode.column] = {
     ...startingNode,
@@ -33,6 +35,7 @@ export function dijkstra(nodes) {
             break;
           case "end":
             isNotFound = false;
+            distance = currentNode.distance;
             pathOrder = findNodesOrderToStart(currentNode);
             break;
           default:
@@ -41,7 +44,17 @@ export function dijkstra(nodes) {
       }
     }
   }
-  return { nodesOrder, pathOrder };
+  const endTime = performance.now();
+  const timeTaken = endTime - startTime;
+  return {
+    nodesOrder,
+    pathOrder,
+    statistics: {
+      distance: distance + 1,
+      numberOfVisited: nodesOrder.length,
+      timeTaken: timeTaken,
+    },
+  };
 }
 
 const findNodesOrderToStart = (finalNode) => {

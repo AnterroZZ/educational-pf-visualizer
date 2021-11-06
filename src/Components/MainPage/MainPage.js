@@ -140,7 +140,8 @@ const MainPage = () => {
 
   const animateAlgo = (stack, currentNodes, time) => {
     setIsInBlockedState(true);
-    const { nodesOrder, pathOrder } = stack;
+    const { nodesOrder, pathOrder, statistics } = stack;
+    console.log(statistics);
     const newNodes = JSON.parse(JSON.stringify(currentNodes));
 
     //Used to move around end and start node
