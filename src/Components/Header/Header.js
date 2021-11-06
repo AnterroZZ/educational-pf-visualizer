@@ -1,4 +1,3 @@
-import Controls from "./HeaderComponents/Controls/Controls";
 import Picker from "./HeaderComponents/Picker/Picker";
 import styles from "./Header.module.css";
 import DropdownMenu from "./HeaderComponents/DropdownMenu/DropdownMenu";
