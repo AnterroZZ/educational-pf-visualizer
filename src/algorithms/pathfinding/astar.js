@@ -24,7 +24,6 @@ export function astar(nodes) {
     const q = openList.pop();
 
     if (q.row === endingNode.row && q.column === endingNode.column) {
-      console.log("Found end!");
       pathOrder = findNodesOrderToStart(q.previous);
       break;
     }
@@ -56,8 +55,6 @@ export function astar(nodes) {
           const h =
             Math.abs(neighbours[i].row - endingNode.row) +
             Math.abs(neighbours[i].column - endingNode.column);
-          console.log(g);
-          console.log(h);
           const distance = g + h;
           const updatedNeighbour = {
             ...neighbours[i],
@@ -75,8 +72,6 @@ export function astar(nodes) {
 
     closedList.push(q);
   }
-  console.log("Nodes order", nodesOrder);
-  console.log("Path order", pathOrder);
   return { nodesOrder, pathOrder };
 }
 

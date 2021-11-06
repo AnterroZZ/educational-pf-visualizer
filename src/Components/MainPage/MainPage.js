@@ -174,7 +174,9 @@ const MainPage = () => {
           };
           if (nodesOrder.length === indx + 1) {
             setNodes(newNodes);
-            animatePath(pathOrder, newNodes, time);
+            if (pathOrder.length === 0) {
+              setIsInBlockedState(false);
+            } else animatePath(pathOrder, newNodes, time);
           }
         }, time * indx);
       });
