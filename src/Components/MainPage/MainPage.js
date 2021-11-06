@@ -33,16 +33,7 @@ export const populateNodes = () => {
     }
     nodes.push(currentRow);
   }
-
   return nodes;
-};
-
-const updateNodes = (nodes, col, row, type, prevType = type) => {
-  const newNodes = nodes.slice();
-  const node = nodes[row][col];
-  const newNode = { ...node, type: type, prevType: prevType };
-  newNodes[row][col] = newNode;
-  return newNodes;
 };
 
 const clearPaths = (allNodes) => {
@@ -51,7 +42,6 @@ const clearPaths = (allNodes) => {
     for (let column = 0; column < workOnNodes[0].length; column++) {
       const currentNode = workOnNodes[row][column];
       if (currentNode.type === "visited" || currentNode.type === "path") {
-        console.log("chaning type");
         workOnNodes[row][column] = { ...currentNode, type: "clear" };
       }
     }
@@ -62,6 +52,7 @@ const clearPaths = (allNodes) => {
 
 const MainPage = () => {
   const [nodes, setNodes] = useState(populateNodes());
+  const [previousNode, setPreviousNode] = useState({ row: 0, column: 0 });
   const [isInDrawingMode, setIsInDrawingMode] = useState(false);
   const [isInBlockedState, setIsInBlockedState] = useState(false);
   const [drawingType, setDrawingType] = useState("");
@@ -69,17 +60,17 @@ const MainPage = () => {
   const {
     currentMazeAlgorithm,
     currentAnimationStyle,
-    setCurrentMazeAlgorithm,
     currentAlgorithm,
     setCurrentAlgorithm,
+    animationSpeed,
   } = useAlgorithm();
 
   useEffect(() => {
     setNodes(populateNodes());
+    setCurrentAlgorithm("Default");
   }, [clear]);
 
   useEffect(() => {
-    setCurrentMazeAlgorithm("Default");
     switch (currentMazeAlgorithm) {
       case "Recursive backtracking":
         generateMaze(currentMazeAlgorithm, nodes);
@@ -97,19 +88,16 @@ const MainPage = () => {
     switch (currentAlgorithm) {
       case "Dijkstra's algorithm":
         const dijkstraNodes = dijkstra(nodes);
-        console.log(dijkstraNodes);
-        animateAlgo(dijkstraNodes);
+        animateAlgo(dijkstraNodes, nodes, 2);
     }
-    setCurrentAlgorithm("Default");
   }, [currentAlgorithm]);
 
-  const animateAlgo = (stack) => {
+  const animateAlgo = (stack, currentNodes, time) => {
     setIsInBlockedState(true);
     const { nodesOrder, pathOrder } = stack;
-    console.log(nodesOrder);
-    const newNodes = JSON.parse(JSON.stringify(nodes));
-    nodesOrder.forEach((currNode, indx) => {
-      setTimeout(() => {
+    const newNodes = JSON.parse(JSON.stringify(currentNodes));
+    if (time === 0) {
+      nodesOrder.forEach((currNode, indx) => {
         document.getElementById(
           `node-${currNode.row}-${currNode.column}`
         ).className = `${nodeStyles.visited}`;
@@ -119,32 +107,84 @@ const MainPage = () => {
           type: "visited",
         };
         if (nodesOrder.length === indx + 1) {
-          setTimeout(() => {
-            setNodes(newNodes);
-            animatePath(pathOrder, newNodes);
-          }, 500);
+          setNodes(newNodes);
+          if (pathOrder.length === 0) {
+            setIsInBlockedState(false);
+          } else animatePath(pathOrder, newNodes, time);
         }
-      }, indx * 1);
-    });
+      });
+    } else
+      nodesOrder.forEach((currNode, indx) => {
+        setTimeout(() => {
+          document.getElementById(
+            `node-${currNode.row}-${currNode.column}`
+          ).className = `${nodeStyles.visited}`;
+
+          newNodes[currNode.row][currNode.column] = {
+            ...currNode,
+            type: "visited",
+          };
+          if (nodesOrder.length === indx + 1) {
+            setNodes(newNodes);
+            animatePath(pathOrder, newNodes, time);
+          }
+        }, time * indx);
+      });
   };
 
-  const animatePath = (stack, currentNodes) => {
+  const updateNodes = (nodes, col, row, type, prevType = type) => {
+    const newNodes = JSON.parse(JSON.stringify(nodes));
+    const node = nodes[row][col];
+    const newNode = { ...node, type: type, prevType: prevType };
+    newNodes[row][col] = newNode;
+    setNodes(newNodes);
+  };
+
+  const moveStartEnd = (row, col, prevRow, prevCol, type) => {
+    let copyOfNodes = JSON.parse(JSON.stringify(nodes));
+    const newNode = copyOfNodes[row][col];
+    const prevNode = copyOfNodes[prevRow][prevCol];
+    const newUpdatedNode = { ...newNode, type: type, prevType: newNode.type };
+    const prevUpdatedNode = { ...prevNode, type: prevNode.prevType };
+    copyOfNodes[row][col] = newUpdatedNode;
+    copyOfNodes[prevRow][prevCol] = prevUpdatedNode;
+    switch (currentAlgorithm) {
+      case "Dijkstra's algorithm":
+        copyOfNodes = clearPaths(copyOfNodes);
+        const dijkstraNodes = dijkstra(copyOfNodes);
+        animateAlgo(dijkstraNodes, copyOfNodes, 0);
+        break;
+      default:
+        setNodes(copyOfNodes);
+    }
+  };
+
+  const animatePath = (stack, currentNodes, time) => {
     const nooods = JSON.parse(JSON.stringify(currentNodes));
-    stack.forEach((currNode, indx) => {
-      setTimeout(() => {
+    if (time === 0) {
+      stack.forEach((currNode, indx) => {
         document.getElementById(
           `node-${currNode.row}-${currNode.column}`
         ).className = `${nodeStyles.path}`;
-
         nooods[currNode.row][currNode.column].type = "path";
         if (stack.length === indx + 1) {
-          setTimeout(() => {
+          setNodes(nooods);
+          setIsInBlockedState(false);
+        }
+      });
+    } else
+      stack.forEach((currNode, indx) => {
+        setTimeout(() => {
+          document.getElementById(
+            `node-${currNode.row}-${currNode.column}`
+          ).className = `${nodeStyles.path}`;
+          nooods[currNode.row][currNode.column].type = "path";
+          if (stack.length === indx + 1) {
             setNodes(nooods);
             setIsInBlockedState(false);
-          }, 500);
-        }
-      }, indx * 20);
-    });
+          }
+        }, 20 * indx);
+      });
   };
 
   const generateMaze = (currentMazeAlgorithm, nodes) => {
@@ -183,11 +223,10 @@ const MainPage = () => {
       }
     }
 
-    const mazeAnimationSpeed = 10;
     stack.forEach((currNode, indx) => {
       const { node, type } = currNode;
       const nodeType = newNodesAnim[node.row][node.column].type;
-      if (mazeAnimationSpeed === 0) {
+      if (animationSpeed === 0) {
         if (!(nodeType === "start" || nodeType === "end")) {
           newNodes[node.row][node.column].type = "clear";
           setNodes(newNodes);
@@ -215,7 +254,7 @@ const MainPage = () => {
               setIsInBlockedState(false);
             }, 500);
           }
-        }, 1000 + indx * mazeAnimationSpeed);
+        }, 1000 + indx * animationSpeed);
       }
     });
   };
@@ -260,7 +299,7 @@ const MainPage = () => {
             setIsInBlockedState(false);
           }, 500);
         }
-      }, indx * 5);
+      }, indx * animationSpeed);
     });
   };
   return (
@@ -285,8 +324,11 @@ const MainPage = () => {
                   node={node}
                   nodes={nodes}
                   setNodes={setNodes}
+                  setPreviousNode={setPreviousNode}
+                  previousNode={previousNode}
                   isInBlockedState={isInBlockedState}
                   updateNodes={updateNodes}
+                  onMoveStartEnd={moveStartEnd}
                 />
               );
             })}

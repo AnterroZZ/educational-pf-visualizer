@@ -5,6 +5,7 @@ import DropdownMenu from "./HeaderComponents/DropdownMenu/DropdownMenu";
 import DropdownItem from "./HeaderComponents/DropdownItem/DropdownItem";
 import { useAlgorithm } from "../Contex/AlgorithmsContext";
 import Button from "../UI/Button/Button";
+import { useState } from "react";
 
 const Header = () => {
   const {
@@ -12,7 +13,9 @@ const Header = () => {
     setCurrentMazeAlgorithm,
     currentAnimationStyle,
     setCurrentAnimationStyle,
+    setAnimationSpeed,
   } = useAlgorithm();
+  const [animationSpeedText, setAnimationSpeedText] = useState("Normal");
 
   const handleAlgoritmsChosen = (name) => {
     setCurrentAlgorithm(name);
@@ -30,6 +33,21 @@ const Header = () => {
       : setCurrentAnimationStyle("Classic");
     event.stopPropagation();
   };
+
+  const handleChangeOfMazeAnimationSpeed = (event) => {
+    if (animationSpeedText === "Normal") {
+      setAnimationSpeed(4);
+      setAnimationSpeedText("Fast");
+    } else if (animationSpeedText === "Fast") {
+      setAnimationSpeed(20);
+      setAnimationSpeedText("Slow");
+    } else if (animationSpeedText === "Slow") {
+      setAnimationSpeed(10);
+      setAnimationSpeedText("Normal");
+    }
+    event.stopPropagation();
+  };
+
   return (
     <div className={styles.wraper}>
       <h2>Pathfinding algorithms</h2>
@@ -58,6 +76,11 @@ const Header = () => {
           <Button
             text={currentAnimationStyle}
             onClick={handleOnAnimationChange}
+          />
+          <p className={styles.subtitle}>Animation speed</p>
+          <Button
+            text={animationSpeedText}
+            onClick={handleChangeOfMazeAnimationSpeed}
           />
           <hr />
           <DropdownItem onClick={handleMazeChosen} name={"Random maze"} />

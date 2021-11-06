@@ -1,4 +1,4 @@
-button {
+.customButton {
   color: white;
   background: #161616;
   border-radius: 5px;
@@ -9,11 +9,11 @@ button {
   cursor: pointer;
 }
 
-button:hover {
+.customButton:hover {
   background: #353535;
 }
 
-button:active {
+.customButton:active {
   animation: grow 0.2s ease-out;
 }
 

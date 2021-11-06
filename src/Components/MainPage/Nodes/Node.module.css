@@ -20,7 +20,7 @@
 .path {
   background: #fff022;
   border: 1px #ddd01f solid;
-  animation: pathAnim 0.7s linear;
+  /* animation: pathAnim 0.7s linear; */
 }
 
 .start {

@@ -1,7 +1,6 @@
 export function dijkstra(nodes) {
   const algoNodes = JSON.parse(JSON.stringify(nodes));
   const startingNode = find("start", algoNodes);
-  const endingNode = find("end", algoNodes);
   const priorityQueue = [];
   const nodesOrder = [];
   let pathOrder = [];
@@ -17,36 +16,31 @@ export function dijkstra(nodes) {
     const currentNode = priorityQueue.shift();
     const neighbours = findNeighbours(currentNode, algoNodes);
     if (neighbours.length !== 0) {
-      neighbours.forEach((neighbour) => {
-        switch (neighbour.type) {
+      for (let i = 0; i < neighbours.length; i++) {
+        switch (neighbours[i].type) {
           case "clear":
-            // case "visited":
-            // case "path":
-            // nodesOrder.push(markAsVisited(neighbour));
             const updatedNeighbour = {
-              ...neighbour,
+              ...neighbours[i],
               type: "visited",
               distance: currentNode.distance + 1,
               previous: currentNode,
             };
             nodesOrder.push(updatedNeighbour);
 
-            algoNodes[neighbour.row][neighbour.column] = updatedNeighbour;
+            algoNodes[neighbours[i].row][neighbours[i].column] =
+              updatedNeighbour;
             priorityQueue.push(updatedNeighbour);
-            break;
-          case "wall":
             break;
           case "end":
             isNotFound = false;
             pathOrder = findNodesOrderToStart(currentNode);
             break;
           default:
-            console.log(`No such node type: ${neighbour.type}`);
+          // console.log(`No such node type: ${neighbours[i].type}`);
         }
-      });
+      }
     }
   }
-
   return { nodesOrder, pathOrder };
 }
 
@@ -87,13 +81,5 @@ const find = (nodeType, allNodes) => {
       }
     }
   }
-  throw `Couldn't find the ${nodeType.toUpper()} node`;
-};
-
-const markAsPath = (node, nodes) => {
-  return { node: node, type: "path" };
-};
-
-const markAsVisited = (node, nodes) => {
-  return { node: node, type: "visited" };
+  // console.log(`Couldn't find the ${nodeType.toUpper()} node`);
 };
