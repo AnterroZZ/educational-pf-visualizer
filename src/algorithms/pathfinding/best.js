@@ -1,75 +1,75 @@
+import { find, findNeighbours, findNodesOrderToStart } from "./pathfindingUtils";
+
 export function best(nodes) {
   const algoNodes = JSON.parse(JSON.stringify(nodes));
   let startingNode = find("start", algoNodes);
   const endingNode = find("end", algoNodes);
-  const openList = [];
+  const priorityQueue = [];
   const nodesOrder = [];
   let pathOrder = [];
-  let distance = 0;
+  let endNodeDistance = 0;
   const startTime = performance.now();
+
+  //TODO: No starting or ending node
+
   algoNodes[startingNode.row][startingNode.column] = {
     ...startingNode,
     distance: 0,
     g: 0,
     h: 0,
   };
-  startingNode = algoNodes[startingNode.row][startingNode.column];
-  openList.push(startingNode);
-  let isNotFound = true;
 
-  while (openList.length > 0 && isNotFound) {
-    if (openList.length > 1)
-      openList.sort((a, b) => {
+  startingNode = algoNodes[startingNode.row][startingNode.column];
+  priorityQueue.push(startingNode);
+
+  while (priorityQueue.length > 0) {
+    if (priorityQueue.length > 1)
+      priorityQueue.sort((a, b) => {
         return b.distance - a.distance;
       });
-    const q = openList.pop();
+    const currentNode = priorityQueue.pop();
 
-    if (q.row === endingNode.row && q.column === endingNode.column) {
-      pathOrder = findNodesOrderToStart(q.previous);
-      distance = q.distance;
+    if (currentNode.type === "end") {
+      pathOrder = findNodesOrderToStart(currentNode.previous);
+      endNodeDistance = pathOrder.length;
       break;
     }
 
-    if (q.type !== "start") nodesOrder.push(q);
-
-    const neighbours = findNeighbours(q, algoNodes);
+    const neighbours = findNeighbours(currentNode, algoNodes);
+    if (currentNode.row === 9 && currentNode.column === 11) {
+      console.log("x");
+    }
     if (neighbours.length !== 0) {
       for (let i = 0; i < neighbours.length; i++) {
-        if (neighbours[i].type === "clear") {
-          const g = q.g + 1;
-          const h =
-            Math.abs(neighbours[i].row - endingNode.row) +
-            Math.abs(neighbours[i].column - endingNode.column);
-          const distance = h;
+        const distance =
+          Math.abs(neighbours[i].row - endingNode.row) + Math.abs(neighbours[i].column - endingNode.column);
+        if (distance < algoNodes[neighbours[i].row][neighbours[i].column].distance) {
           const updatedNeighbour = {
             ...neighbours[i],
-            g: g,
-            h: h,
             distance: distance,
-            previous: q,
-            type: "visited",
+            previous: currentNode,
           };
-          // nodesOrder.push(updatedNeighbour);
-          openList.push(updatedNeighbour);
+          const objIndex = priorityQueue.findIndex((obj) => obj.id === updatedNeighbour.id);
+          priorityQueue[objIndex] = updatedNeighbour;
           algoNodes[neighbours[i].row][neighbours[i].column] = updatedNeighbour;
-        } else if (neighbours[i].type === "end") {
-          const g = q.g + 1;
-          const h =
-            Math.abs(neighbours[i].row - endingNode.row) +
-            Math.abs(neighbours[i].column - endingNode.column);
-          const distance = h;
+        } else if (algoNodes[neighbours[i].row][neighbours[i].column].distance === null) {
           const updatedNeighbour = {
             ...neighbours[i],
-            g: g,
-            h: h,
             distance: distance,
-            previous: q,
-            type: "end",
+            previous: currentNode,
           };
-          openList.push(updatedNeighbour);
+          priorityQueue.push(updatedNeighbour);
           algoNodes[neighbours[i].row][neighbours[i].column] = updatedNeighbour;
         }
       }
+    }
+
+    if (currentNode.type !== "start") {
+      nodesOrder.push(currentNode);
+      algoNodes[currentNode.row][currentNode.column] = {
+        ...currentNode,
+        type: "visited",
+      };
     }
   }
   const endTime = performance.now();
@@ -78,49 +78,9 @@ export function best(nodes) {
     nodesOrder,
     pathOrder,
     statistics: {
-      distance: distance,
+      distance: endNodeDistance,
       numberOfVisited: nodesOrder.length,
       timeTaken: timeTaken,
     },
   };
 }
-
-const findNodesOrderToStart = (finalNode) => {
-  const nodesOrder = [];
-  let currentNode = finalNode;
-  while (currentNode.type !== "start") {
-    nodesOrder.push(currentNode);
-    currentNode = currentNode.previous;
-  }
-
-  return nodesOrder.reverse();
-};
-
-const findNeighbours = (node, allNodes) => {
-  const neighbours = [];
-  if (node.row + 1 < allNodes.length) {
-    neighbours.push(allNodes[node.row + 1][node.column]);
-  }
-  if (node.column + 1 < allNodes[0].length) {
-    neighbours.push(allNodes[node.row][node.column + 1]);
-  }
-  if (node.row - 1 >= 0) {
-    neighbours.push(allNodes[node.row - 1][node.column]);
-  }
-  if (node.column - 1 >= 0) {
-    neighbours.push(allNodes[node.row][node.column - 1]);
-  }
-
-  return neighbours;
-};
-
-const find = (nodeType, allNodes) => {
-  for (let row = 0; row < allNodes.length; row++) {
-    for (let column = 0; column < allNodes[0].length; column++) {
-      if (allNodes[row][column].type === nodeType) {
-        return allNodes[row][column];
-      }
-    }
-  }
-  // console.log(`Couldn't find the ${nodeType.toUpper()} node`);
-};

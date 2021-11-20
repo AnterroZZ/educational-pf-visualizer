@@ -20,7 +20,7 @@ function singleNode(id, row, column) {
     type: "clear",
     prevType: "clear",
     neighbours: [],
-    distance: Number.POSITIVE_INFINITY,
+    distance: Infinity,
   };
 }
 
@@ -48,6 +48,13 @@ const clearPaths = (allNodes) => {
         workOnNodes[row][column] = {
           ...currentNode,
           type: "clear",
+          distance: Infinity,
+        };
+      }
+      if (currentNode.type === "end") {
+        workOnNodes[row][column] = {
+          ...currentNode,
+          type: "end",
           distance: Infinity,
         };
       }

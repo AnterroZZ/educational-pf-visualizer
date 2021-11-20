@@ -1,3 +1,5 @@
+import { find, findNeighbours, findNodesOrderToStart } from "./pathfindingUtils";
+
 export function dijkstra(nodes) {
   const algoNodes = JSON.parse(JSON.stringify(nodes));
   const startingNode = find("start", algoNodes);
@@ -5,7 +7,7 @@ export function dijkstra(nodes) {
   const priorityQueue = [];
   const nodesOrder = [];
   let pathOrder = [];
-  let distance = 0;
+  let endNodeDistance = 0;
   const startTime = performance.now();
 
   if (!startingNode || !endingNode) {
@@ -39,90 +41,48 @@ export function dijkstra(nodes) {
 
     if (currentNode.type === "end") {
       pathOrder = findNodesOrderToStart(currentNode.previous);
-      distance = currentNode.distance;
+      endNodeDistance = pathOrder.length;
       break;
     }
-
-    if (currentNode.type !== "start") nodesOrder.push(currentNode);
 
     const neighbours = findNeighbours(currentNode, algoNodes);
     if (neighbours.length !== 0) {
       for (let i = 0; i < neighbours.length; i++) {
-        if (neighbours[i].type === "clear") {
+        const distance = currentNode.distance + 1;
+        if (
+          distance < algoNodes[neighbours[i].row][neighbours[i].column].distance ||
+          algoNodes[neighbours[i].row][neighbours[i].column].distance === null
+        ) {
           const updatedNeighbour = {
             ...neighbours[i],
             distance: currentNode.distance + 1,
             previous: currentNode,
           };
-          priorityQueue.push(updatedNeighbour);
-          algoNodes[neighbours[i].row][neighbours[i].column] = updatedNeighbour;
-        } else if (neighbours[i].type === "end") {
-          const updatedNeighbour = {
-            ...neighbours[i],
-            type: "end",
-            distance: currentNode.distance + 1,
-            previous: currentNode,
-          };
-          priorityQueue.push(updatedNeighbour);
+          if (algoNodes[neighbours[i].row][neighbours[i].column].distance === null) {
+            priorityQueue.push(updatedNeighbour);
+          }
+
           algoNodes[neighbours[i].row][neighbours[i].column] = updatedNeighbour;
         }
       }
     }
-    algoNodes[currentNode.row][currentNode.column] = {
-      ...currentNode,
-      type: "visited",
-    };
+    if (currentNode.type !== "start") {
+      nodesOrder.push(currentNode);
+      algoNodes[currentNode.row][currentNode.column] = {
+        ...currentNode,
+        type: "visited",
+      };
+    }
   }
   const endTime = performance.now();
   const timeTaken = endTime - startTime;
-  console.log(timeTaken);
   return {
     nodesOrder,
     pathOrder,
     statistics: {
-      distance: distance + 1,
+      distance: endNodeDistance,
       numberOfVisited: nodesOrder.length,
       timeTaken: timeTaken,
     },
   };
 }
-
-const findNodesOrderToStart = (finalNode) => {
-  const nodesOrder = [];
-  let currentNode = finalNode;
-  while (currentNode.type !== "start") {
-    nodesOrder.push(currentNode);
-    currentNode = currentNode.previous;
-  }
-
-  return nodesOrder.reverse();
-};
-
-const findNeighbours = (node, allNodes) => {
-  const neighbours = [];
-  if (node.row + 1 < allNodes.length) {
-    neighbours.push(allNodes[node.row + 1][node.column]);
-  }
-  if (node.column + 1 < allNodes[0].length) {
-    neighbours.push(allNodes[node.row][node.column + 1]);
-  }
-  if (node.row - 1 >= 0) {
-    neighbours.push(allNodes[node.row - 1][node.column]);
-  }
-  if (node.column - 1 >= 0) {
-    neighbours.push(allNodes[node.row][node.column - 1]);
-  }
-
-  return neighbours;
-};
-
-const find = (nodeType, allNodes) => {
-  for (let row = 0; row < allNodes.length; row++) {
-    for (let column = 0; column < allNodes[0].length; column++) {
-      if (allNodes[row][column].type === nodeType) {
-        return allNodes[row][column];
-      }
-    }
-  }
-  // console.log(`Couldn't find the ${nodeType.toUpper()} node`);
-};
