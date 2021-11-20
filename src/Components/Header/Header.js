@@ -69,6 +69,10 @@ const Header = () => {
             onClick={handleAlgoritmsChosen}
             name={"Breadth first search"}
           />
+          <DropdownItem
+            onClick={handleAlgoritmsChosen}
+            name={"Best first search"}
+          />
         </DropdownMenu>
       </Picker>
       <h3>/</h3>

@@ -1,40 +1,19 @@
-export function dijkstra(nodes) {
+export function breadth(nodes) {
   const algoNodes = JSON.parse(JSON.stringify(nodes));
   const startingNode = find("start", algoNodes);
-  const endingNode = find("end", algoNodes);
   const priorityQueue = [];
   const nodesOrder = [];
   let pathOrder = [];
   let distance = 0;
   const startTime = performance.now();
 
-  if (!startingNode || !endingNode) {
-    const endTime = performance.now();
-    const timeTaken = endTime - startTime;
-    return {
-      nodesOrder,
-      pathOrder,
-      statistics: {
-        distance: 0,
-        numberOfVisited: nodesOrder.length,
-        timeTaken: timeTaken,
-      },
-    };
-  }
-
   algoNodes[startingNode.row][startingNode.column] = {
     ...startingNode,
     distance: 0,
   };
-
   priorityQueue.push(startingNode);
 
   while (priorityQueue.length > 0) {
-    if (priorityQueue.length > 1) {
-      priorityQueue.sort((a, b) => {
-        return a.distance - b.distance;
-      });
-    }
     const currentNode = priorityQueue.shift();
 
     if (currentNode.type === "end") {
@@ -51,6 +30,7 @@ export function dijkstra(nodes) {
         if (neighbours[i].type === "clear") {
           const updatedNeighbour = {
             ...neighbours[i],
+            type: "visited",
             distance: currentNode.distance + 1,
             previous: currentNode,
           };
@@ -68,14 +48,9 @@ export function dijkstra(nodes) {
         }
       }
     }
-    algoNodes[currentNode.row][currentNode.column] = {
-      ...currentNode,
-      type: "visited",
-    };
   }
   const endTime = performance.now();
   const timeTaken = endTime - startTime;
-  console.log(timeTaken);
   return {
     nodesOrder,
     pathOrder,

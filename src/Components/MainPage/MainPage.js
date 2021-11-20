@@ -8,6 +8,8 @@ import { recursive } from "../../algorithms/mazes/recursive";
 import { randomMaze } from "../../algorithms/mazes/random";
 import { dijkstra } from "../../algorithms/pathfinding/dijkstra";
 import { astar } from "../../algorithms/pathfinding/astar";
+import { breadth } from "../../algorithms/pathfinding/breadth";
+import { best } from "../../algorithms/pathfinding/best";
 
 // Node types are: clear, wall, start, end, visited
 function singleNode(id, row, column) {
@@ -18,7 +20,7 @@ function singleNode(id, row, column) {
     type: "clear",
     prevType: "clear",
     neighbours: [],
-    distance: Infinity,
+    distance: Number.POSITIVE_INFINITY,
   };
 }
 
@@ -43,7 +45,11 @@ const clearPaths = (allNodes) => {
     for (let column = 0; column < workOnNodes[0].length; column++) {
       const currentNode = workOnNodes[row][column];
       if (currentNode.type === "visited" || currentNode.type === "path") {
-        workOnNodes[row][column] = { ...currentNode, type: "clear" };
+        workOnNodes[row][column] = {
+          ...currentNode,
+          type: "clear",
+          distance: Infinity,
+        };
       }
     }
   }
@@ -103,6 +109,14 @@ const MainPage = () => {
         const astarNodes = astar(copyOfNodes);
         animateAlgo(astarNodes, copyOfNodes, 4);
         break;
+      case "Breadth first search":
+        const breadthNodes = breadth(copyOfNodes);
+        animateAlgo(breadthNodes, copyOfNodes, 2);
+        break;
+      case "Best first search":
+        const bestNodes = best(copyOfNodes);
+        animateAlgo(bestNodes, copyOfNodes, 2);
+        break;
     }
   }, [currentAlgorithm]);
 
@@ -133,6 +147,16 @@ const MainPage = () => {
         const astarNodes = astar(copyOfNodes);
         animateAlgo(astarNodes, copyOfNodes, 0);
         break;
+      case "Breadth first search":
+        copyOfNodes = clearPaths(copyOfNodes);
+        const breadthNodes = breadth(copyOfNodes);
+        animateAlgo(breadthNodes, copyOfNodes, 0);
+        break;
+      case "Best first search":
+        copyOfNodes = clearPaths(copyOfNodes);
+        const bestNodes = best(copyOfNodes);
+        animateAlgo(bestNodes, copyOfNodes, 0);
+        break;
       default:
         setNodes(copyOfNodes);
     }
@@ -147,9 +171,7 @@ const MainPage = () => {
     //Used to move around end and start node
     if (time === 0) {
       nodesOrder.forEach((currNode, indx) => {
-        document.getElementById(
-          `node-${currNode.row}-${currNode.column}`
-        ).className = `${nodeStyles.visited}`;
+        document.getElementById(`node-${currNode.row}-${currNode.column}`).className = `${nodeStyles.visited}`;
 
         newNodes[currNode.row][currNode.column] = {
           ...currNode,
@@ -165,9 +187,7 @@ const MainPage = () => {
     } else
       nodesOrder.forEach((currNode, indx) => {
         setTimeout(() => {
-          document.getElementById(
-            `node-${currNode.row}-${currNode.column}`
-          ).className = `${nodeStyles.visited}`;
+          document.getElementById(`node-${currNode.row}-${currNode.column}`).className = `${nodeStyles.visited}`;
 
           newNodes[currNode.row][currNode.column] = {
             ...currNode,
@@ -187,9 +207,7 @@ const MainPage = () => {
     const nooods = JSON.parse(JSON.stringify(currentNodes));
     if (time === 0) {
       stack.forEach((currNode, indx) => {
-        document.getElementById(
-          `node-${currNode.row}-${currNode.column}`
-        ).className = `${nodeStyles.path}`;
+        document.getElementById(`node-${currNode.row}-${currNode.column}`).className = `${nodeStyles.path}`;
         nooods[currNode.row][currNode.column].type = "path";
         if (stack.length === indx + 1) {
           setNodes(nooods);
@@ -199,9 +217,7 @@ const MainPage = () => {
     } else
       stack.forEach((currNode, indx) => {
         setTimeout(() => {
-          document.getElementById(
-            `node-${currNode.row}-${currNode.column}`
-          ).className = `${nodeStyles.path}`;
+          document.getElementById(`node-${currNode.row}-${currNode.column}`).className = `${nodeStyles.path}`;
           nooods[currNode.row][currNode.column].type = "path";
           if (stack.length === indx + 1) {
             setNodes(nooods);
@@ -239,9 +255,7 @@ const MainPage = () => {
       for (let column = 0; column < nodes[0].length; column++) {
         const currentNode = newNodes[row][column];
         if (!(currentNode.type === "start" || currentNode.type === "end")) {
-          document.getElementById(
-            `node-${currentNode.row}-${currentNode.column}`
-          ).className = `${nodeStyles.wall}`;
+          document.getElementById(`node-${currentNode.row}-${currentNode.column}`).className = `${nodeStyles.wall}`;
           newNodes[row][column] = { ...nodes[row][column], type: "wall" };
         }
       }
@@ -260,14 +274,10 @@ const MainPage = () => {
         setTimeout(() => {
           if (!(nodeType === "start" || nodeType === "end")) {
             if (type === "clear") {
-              document.getElementById(
-                `node-${node.row}-${node.column}`
-              ).className = `${nodeStyles.node}`;
+              document.getElementById(`node-${node.row}-${node.column}`).className = `${nodeStyles.node}`;
               newNodesAnim[node.row][node.column].type = "clear";
             } else {
-              document.getElementById(
-                `node-${node.row}-${node.column}`
-              ).className = `${nodeStyles.visited}`;
+              document.getElementById(`node-${node.row}-${node.column}`).className = `${nodeStyles.visited}`;
               newNodesAnim[node.row][node.column].type = "visited";
             }
             newNodes[node.row][node.column].type = "clear";
@@ -300,9 +310,7 @@ const MainPage = () => {
       for (let column = 0; column < nodes[0].length; column++) {
         const currentNode = nooods[row][column];
         if (!(currentNode.type === "start" || currentNode.type === "end")) {
-          document.getElementById(
-            `node-${currentNode.row}-${currentNode.column}`
-          ).className = `${nodeStyles.node}`;
+          document.getElementById(`node-${currentNode.row}-${currentNode.column}`).className = `${nodeStyles.node}`;
           nooods[row][column] = { ...nodes[row][column], type: "clear" };
         }
       }
@@ -311,9 +319,7 @@ const MainPage = () => {
     onlyWalls.forEach((currNode, indx) => {
       setTimeout(() => {
         if (!(currNode.type === "start" || currNode.type === "end")) {
-          document.getElementById(
-            `node-${currNode.row}-${currNode.column}`
-          ).className = `${nodeStyles.wall}`;
+          document.getElementById(`node-${currNode.row}-${currNode.column}`).className = `${nodeStyles.wall}`;
 
           nooods[currNode.row][currNode.column].type = "wall";
         }

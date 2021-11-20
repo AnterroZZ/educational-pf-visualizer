@@ -1,86 +1,84 @@
-export function dijkstra(nodes) {
+export function best(nodes) {
   const algoNodes = JSON.parse(JSON.stringify(nodes));
-  const startingNode = find("start", algoNodes);
+  let startingNode = find("start", algoNodes);
   const endingNode = find("end", algoNodes);
-  const priorityQueue = [];
+  const openList = [];
   const nodesOrder = [];
   let pathOrder = [];
   let distance = 0;
   const startTime = performance.now();
-
-  if (!startingNode || !endingNode) {
-    const endTime = performance.now();
-    const timeTaken = endTime - startTime;
-    return {
-      nodesOrder,
-      pathOrder,
-      statistics: {
-        distance: 0,
-        numberOfVisited: nodesOrder.length,
-        timeTaken: timeTaken,
-      },
-    };
-  }
-
   algoNodes[startingNode.row][startingNode.column] = {
     ...startingNode,
     distance: 0,
+    g: 0,
+    h: 0,
   };
+  startingNode = algoNodes[startingNode.row][startingNode.column];
+  openList.push(startingNode);
+  let isNotFound = true;
 
-  priorityQueue.push(startingNode);
-
-  while (priorityQueue.length > 0) {
-    if (priorityQueue.length > 1) {
-      priorityQueue.sort((a, b) => {
-        return a.distance - b.distance;
+  while (openList.length > 0 && isNotFound) {
+    if (openList.length > 1)
+      openList.sort((a, b) => {
+        return b.distance - a.distance;
       });
-    }
-    const currentNode = priorityQueue.shift();
+    const q = openList.pop();
 
-    if (currentNode.type === "end") {
-      pathOrder = findNodesOrderToStart(currentNode.previous);
-      distance = currentNode.distance;
+    if (q.row === endingNode.row && q.column === endingNode.column) {
+      pathOrder = findNodesOrderToStart(q.previous);
+      distance = q.distance;
       break;
     }
 
-    if (currentNode.type !== "start") nodesOrder.push(currentNode);
+    if (q.type !== "start") nodesOrder.push(q);
 
-    const neighbours = findNeighbours(currentNode, algoNodes);
+    const neighbours = findNeighbours(q, algoNodes);
     if (neighbours.length !== 0) {
       for (let i = 0; i < neighbours.length; i++) {
         if (neighbours[i].type === "clear") {
+          const g = q.g + 1;
+          const h =
+            Math.abs(neighbours[i].row - endingNode.row) +
+            Math.abs(neighbours[i].column - endingNode.column);
+          const distance = h;
           const updatedNeighbour = {
             ...neighbours[i],
-            distance: currentNode.distance + 1,
-            previous: currentNode,
+            g: g,
+            h: h,
+            distance: distance,
+            previous: q,
+            type: "visited",
           };
-          priorityQueue.push(updatedNeighbour);
+          // nodesOrder.push(updatedNeighbour);
+          openList.push(updatedNeighbour);
           algoNodes[neighbours[i].row][neighbours[i].column] = updatedNeighbour;
         } else if (neighbours[i].type === "end") {
+          const g = q.g + 1;
+          const h =
+            Math.abs(neighbours[i].row - endingNode.row) +
+            Math.abs(neighbours[i].column - endingNode.column);
+          const distance = h;
           const updatedNeighbour = {
             ...neighbours[i],
+            g: g,
+            h: h,
+            distance: distance,
+            previous: q,
             type: "end",
-            distance: currentNode.distance + 1,
-            previous: currentNode,
           };
-          priorityQueue.push(updatedNeighbour);
+          openList.push(updatedNeighbour);
           algoNodes[neighbours[i].row][neighbours[i].column] = updatedNeighbour;
         }
       }
     }
-    algoNodes[currentNode.row][currentNode.column] = {
-      ...currentNode,
-      type: "visited",
-    };
   }
   const endTime = performance.now();
   const timeTaken = endTime - startTime;
-  console.log(timeTaken);
   return {
     nodesOrder,
     pathOrder,
     statistics: {
-      distance: distance + 1,
+      distance: distance,
       numberOfVisited: nodesOrder.length,
       timeTaken: timeTaken,
     },
