@@ -1,9 +1,20 @@
+import { useEffect, useState } from "react";
+import { useAlgorithm } from "../Contex/AlgorithmsContext";
 import styles from "./Footer.module.css";
-
+import Statistics from "./FooterComponents/Statistics/Statistics";
 const Footer = () => {
+  const [isStatOpen, setIsStatOpen] = useState(false);
+  const { algoStats } = useAlgorithm();
+
+  useEffect(() => {
+    if (algoStats.numberOfOperations !== 0) {
+      setIsStatOpen(true);
+    }
+  }, [algoStats]);
   return (
     <div className={styles.wraper}>
-      <p>Statistics</p>
+      <p onClick={() => setIsStatOpen((prevState) => !prevState)}>Statistics</p>
+      <Statistics algoStats={algoStats} isStatOpen={isStatOpen} />
       <p>Compare algo</p>
     </div>
   );

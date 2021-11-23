@@ -79,10 +79,12 @@ const MainPage = () => {
     currentAlgorithm,
     setCurrentAlgorithm,
     animationSpeed,
+    setAlgoStats,
   } = useAlgorithm();
 
   useEffect(() => {
     setNodes(populateNodes());
+    setAlgoStats({ distance: 0, numberOfVisited: 0, timeTaken: 0 });
     setCurrentAlgorithm("None");
   }, [clear]);
 
@@ -111,23 +113,28 @@ const MainPage = () => {
     switch (currentAlgorithm) {
       case "Dijkstra's algorithm":
         const dijkstraNodes = dijkstra(copyOfNodes);
+        setAlgoStats(dijkstraNodes.statistics);
         animateAlgo(dijkstraNodes, copyOfNodes, 2);
         break;
       case "A* search":
         const astarNodes = astar(copyOfNodes);
+        setAlgoStats(astarNodes.statistics);
         animateAlgo(astarNodes, copyOfNodes, 4);
         break;
       case "Breadth first search":
         const breadthNodes = breadth(copyOfNodes);
+        setAlgoStats(breadthNodes.statistics);
         animateAlgo(breadthNodes, copyOfNodes, 2);
         break;
       case "Best first search":
         const bestNodes = best(copyOfNodes);
+        setAlgoStats(bestNodes.statistics);
         animateAlgo(bestNodes, copyOfNodes, 2);
         break;
       case "Depth first search":
         const depthNodes = depth(copyOfNodes);
-        animateAlgo(depthNodes, copyOfNodes, 50);
+        setAlgoStats(depthNodes.statistics);
+        animateAlgo(depthNodes, copyOfNodes, 2);
         break;
     }
   }, [currentAlgorithm]);
@@ -152,21 +159,25 @@ const MainPage = () => {
       case "Dijkstra's algorithm":
         copyOfNodes = clearPaths(copyOfNodes);
         const dijkstraNodes = dijkstra(copyOfNodes);
+        setAlgoStats(dijkstraNodes.statistics);
         animateAlgo(dijkstraNodes, copyOfNodes, 0);
         break;
       case "A* search":
         copyOfNodes = clearPaths(copyOfNodes);
         const astarNodes = astar(copyOfNodes);
+        setAlgoStats(astarNodes.statistics);
         animateAlgo(astarNodes, copyOfNodes, 0);
         break;
       case "Breadth first search":
         copyOfNodes = clearPaths(copyOfNodes);
         const breadthNodes = breadth(copyOfNodes);
+        setAlgoStats(breadthNodes.statistics);
         animateAlgo(breadthNodes, copyOfNodes, 0);
         break;
       case "Best first search":
         copyOfNodes = clearPaths(copyOfNodes);
         const bestNodes = best(copyOfNodes);
+        setAlgoStats(bestNodes.statistics);
         animateAlgo(bestNodes, copyOfNodes, 0);
         break;
       default:
