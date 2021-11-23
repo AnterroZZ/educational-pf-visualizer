@@ -10,6 +10,7 @@ import { dijkstra } from "../../algorithms/pathfinding/dijkstra";
 import { astar } from "../../algorithms/pathfinding/astar";
 import { breadth } from "../../algorithms/pathfinding/breadth";
 import { best } from "../../algorithms/pathfinding/best";
+import { depth } from "../../algorithms/pathfinding/depth";
 
 // Node types are: clear, wall, start, end, visited
 function singleNode(id, row, column) {
@@ -123,6 +124,10 @@ const MainPage = () => {
       case "Best first search":
         const bestNodes = best(copyOfNodes);
         animateAlgo(bestNodes, copyOfNodes, 2);
+        break;
+      case "Depth first search":
+        const depthNodes = depth(copyOfNodes);
+        animateAlgo(depthNodes, copyOfNodes, 50);
         break;
     }
   }, [currentAlgorithm]);
