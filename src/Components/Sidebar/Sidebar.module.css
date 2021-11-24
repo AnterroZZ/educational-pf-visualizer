@@ -12,6 +12,7 @@
   color: white;
   padding: 5px 20px;
   margin: 0px;
+  cursor: pointer;
 }
 
 .wrapper2 {
@@ -43,6 +44,19 @@
 .triangle {
   width: 0;
   height: 0;
+  border-style: solid;
+  border-width: 0.6rem 0.35rem 0 0.35rem;
+  border-color: #ffffff transparent transparent transparent;
+  line-height: 0px;
+  _border-color: #ffffff #161616 #161616 #161616;
+  _filter: progid:DXImageTransform.Microsoft.Chroma(color='#ffffff');
+  transition: 0.2s ease;
+}
+
+.triangleOpened {
+  width: 0;
+  height: 0;
+  transform: rotate(180deg);
   border-style: solid;
   border-width: 0.6rem 0.35rem 0 0.35rem;
   border-color: #ffffff transparent transparent transparent;

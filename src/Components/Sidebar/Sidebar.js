@@ -16,9 +16,16 @@ const Sidebar = () => {
 
   return (
     <>
-      <div className={styles.wrapper}>
+      <div
+        onClick={() => {
+          if (algoStats.numberOfOperations !== 0) {
+            setIsStatOpen((previous) => !previous);
+          }
+        }}
+        className={styles.wrapper}
+      >
         <p>Statistics</p>
-        <div className={styles.triangle}></div>
+        <div className={isStatOpen ? styles.triangleOpened : styles.triangle}></div>
       </div>
       <Statistics algoStats={algoStats} isStatOpen={isStatOpen} />
       <div className={styles.wrapper2}>
