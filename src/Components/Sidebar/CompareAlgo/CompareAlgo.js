@@ -1,11 +1,11 @@
 import styles from "./CompareAlgo.module.css";
 import Button from "../../UI/Button/Button";
-const CompareAlgo = () => {
+const CompareAlgo = ({ isCompareOpen }) => {
   const handleClearAlgos = () => {};
   const handleAddAlgo = () => {};
   const handleShowAlgo = (name) => {};
   return (
-    <div className={styles.compareAlgo}>
+    <div className={`${styles.compareAlgoWrapper} ${isCompareOpen ? styles.compareAlgoWrapperOpened : ""}`}>
       <div className={styles.header}>
         <p>Algorithm</p>
         <p>Time</p>

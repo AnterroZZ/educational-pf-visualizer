@@ -1,11 +1,10 @@
 import styles from "./Statistics.module.css";
 
-const Statistics = ({ isStatOpen, algoStats }) => {
+const Statistics = ({ isStatOpen, algoStats, currentAlgorithm }) => {
   return (
-    algoStats.numberOfVisited !== 0 &&
-    isStatOpen && (
-      <div className={styles.statisticsDialog}>
-        <p>Dijkstra</p>
+    algoStats.numberOfVisited !== 0 && (
+      <div className={`${styles.statisticsDialog} ${isStatOpen ? styles.statisticsDialogOpened : ""}`}>
+        <p>{currentAlgorithm}</p>
         <div className={styles.statWrapper}>
           <h4>Time elapsed:</h4>
           <p>{round(algoStats.timeTaken)}ms</p>

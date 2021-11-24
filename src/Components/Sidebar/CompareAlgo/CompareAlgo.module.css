@@ -1,7 +1,7 @@
-.compareAlgo {
+.compareAlgoWrapper {
   position: absolute;
   top: 32%;
-  left: 2.5rem;
+  left: -600px;
   min-height: 300px;
   width: auto;
   background-color: rgba(255, 255, 255, 0.8);
@@ -13,6 +13,12 @@
   display: flex;
   flex-direction: column;
   cursor: auto;
+  transition: 0.3s ease;
+}
+
+.compareAlgoWrapperOpened {
+  left: 2.5rem;
+  transition: 0.3s ease;
 }
 
 .header {

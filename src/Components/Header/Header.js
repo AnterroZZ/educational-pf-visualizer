@@ -19,6 +19,13 @@ const Header = () => {
   const { setClear } = useControls();
   const [animationSpeedText, setAnimationSpeedText] = useState("Normal");
 
+  const pathfindingAlgosList = [
+    "A* search",
+    "Dijkstra's algorithm",
+    "Depth first search",
+    "Breadth first search",
+    "Best first search",
+  ];
   const handleAlgoritmsChosen = (name) => {
     setCurrentAlgorithm(name);
     console.log(`Current algorithm set to: ${name}`);
@@ -30,9 +37,7 @@ const Header = () => {
   };
 
   const handleOnAnimationChange = (event) => {
-    currentAnimationStyle === "Classic"
-      ? setCurrentAnimationStyle("Educational")
-      : setCurrentAnimationStyle("Classic");
+    currentAnimationStyle === "Classic" ? setCurrentAnimationStyle("Educational") : setCurrentAnimationStyle("Classic");
     event.stopPropagation();
   };
 
@@ -56,59 +61,31 @@ const Header = () => {
       <h2 className={styles.divider}>/</h2>
       <Picker name="Algorithms">
         <DropdownMenu>
-          <DropdownItem onClick={handleAlgoritmsChosen} name={"A* search"} />
-          <DropdownItem
-            onClick={handleAlgoritmsChosen}
-            name={"Dijkstra's algorithm"}
-          />
-          <DropdownItem
-            onClick={handleAlgoritmsChosen}
-            name={"Depth first search"}
-          />
-          <DropdownItem
-            onClick={handleAlgoritmsChosen}
-            name={"Breadth first search"}
-          />
-          <DropdownItem
-            onClick={handleAlgoritmsChosen}
-            name={"Best first search"}
-          />
+          {pathfindingAlgosList.map((item) => {
+            return <DropdownItem onClick={handleAlgoritmsChosen} name={item} />;
+          })}
         </DropdownMenu>
       </Picker>
       <h3>/</h3>
       <Picker name="Generate maze">
         <DropdownMenu>
           <p className={styles.subtitle}>Animation style</p>
-          <Button
-            text={currentAnimationStyle}
-            onClick={handleOnAnimationChange}
-          />
+          <Button text={currentAnimationStyle} onClick={handleOnAnimationChange} />
           <p className={styles.subtitle}>Animation speed</p>
-          <Button
-            text={animationSpeedText}
-            onClick={handleChangeOfMazeAnimationSpeed}
-          />
+          <Button text={animationSpeedText} onClick={handleChangeOfMazeAnimationSpeed} />
           <hr />
           <DropdownItem onClick={handleMazeChosen} name={"Random maze"} />
 
-          <DropdownItem
-            onClick={handleMazeChosen}
-            name={"Recursive backtracking"}
-          />
+          <DropdownItem onClick={handleMazeChosen} name={"Recursive backtracking"} />
         </DropdownMenu>
       </Picker>
       <h2 className={styles.divider}>/</h2>
       {/* <Controls /> */}
-      <p
-        className={styles.clearButton}
-        onClick={() => setClear((prev) => !prev)}
-      >
+      <p className={styles.clearButton} onClick={() => setClear((prev) => !prev)}>
         Clear walls
       </p>
       <h2 className={styles.divider}>/</h2>
-      <p className={styles.currentAlgo}>
-        Current algorithm: {currentAlgorithm}
-      </p>
+      <p className={styles.currentAlgo}>Current algorithm: {currentAlgorithm}</p>
     </div>
   );
 };
