@@ -1,4 +1,3 @@
-import { useAlgorithm } from "../../../Contex/AlgorithmsContext";
 import styles from "./Statistics.module.css";
 
 const Statistics = ({ isStatOpen, algoStats }) => {

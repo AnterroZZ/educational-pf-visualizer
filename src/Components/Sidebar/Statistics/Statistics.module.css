@@ -1,7 +1,7 @@
 .statisticsDialog {
   position: absolute;
-  bottom: 25px;
-  left: 0px;
+  top: 10%;
+  left: 2.5rem;
   width: auto;
   background-color: rgba(255, 255, 255, 0.8);
   box-shadow: 2px 2px 20px rgba(0, 0, 0, 0.45);
@@ -11,7 +11,19 @@
   align-items: flex-start;
   display: flex;
   flex-direction: column;
-  transition: height 2s ease;
+  cursor: auto;
+}
+
+@media screen and (max-height: 719px) {
+  .statisticsDialog {
+    top: 15%;
+  }
+}
+
+.statistcDialogClosed {
+  position: absolute;
+  bottom: -125px;
+  transition: 2s ease;
   cursor: auto;
 }
 

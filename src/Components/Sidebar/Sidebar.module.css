@@ -1,0 +1,53 @@
+.wrapper {
+  transform-origin: top left;
+  position: absolute;
+  transform: rotate(-90deg) translateX(-100%);
+  top: 10%;
+  left: 0;
+  display: flex;
+  align-items: center;
+  font-size: 1.2rem;
+  gap: 10px;
+  background-color: #161616;
+  color: white;
+  padding: 5px 20px;
+  margin: 0px;
+}
+
+.wrapper2 {
+  position: absolute;
+  transform-origin: top left;
+  top: 32%;
+  transform: rotate(-90deg) translateX(-100%);
+  left: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.2rem;
+  background-color: #161616;
+  color: white;
+  padding: 5px 100px;
+  margin: 0px;
+}
+
+@media screen and (max-height: 719px) {
+  .wrapper {
+    top: 15%;
+  }
+  .wrapper2 {
+    top: 45%;
+    padding: 5px 40px;
+  }
+}
+
+.triangle {
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 0.6rem 0.35rem 0 0.35rem;
+  border-color: #ffffff transparent transparent transparent;
+  line-height: 0px;
+  _border-color: #ffffff #161616 #161616 #161616;
+  _filter: progid:DXImageTransform.Microsoft.Chroma(color='#ffffff');
+  transition: 0.2s ease;
+}
