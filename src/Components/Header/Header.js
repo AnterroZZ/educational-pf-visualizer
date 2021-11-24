@@ -62,7 +62,7 @@ const Header = () => {
       <Picker name="Algorithms">
         <DropdownMenu>
           {pathfindingAlgosList.map((item) => {
-            return <DropdownItem onClick={handleAlgoritmsChosen} name={item} />;
+            return <DropdownItem key={item} onClick={handleAlgoritmsChosen} name={item} />;
           })}
         </DropdownMenu>
       </Picker>

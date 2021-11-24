@@ -3,7 +3,7 @@ import Button from "../../UI/Button/Button";
 const CompareAlgo = ({ isCompareOpen }) => {
   const handleClearAlgos = () => {};
   const handleAddAlgo = () => {};
-  const handleShowAlgo = (name) => {};
+  // const handleShowAlgo = (name) => {};
   return (
     <div className={`${styles.compareAlgoWrapper} ${isCompareOpen ? styles.compareAlgoWrapperOpened : ""}`}>
       <div className={styles.header}>

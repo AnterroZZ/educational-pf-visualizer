@@ -6,7 +6,7 @@ const DropdownItem = (props) => {
   };
 
   return (
-    <li onClick={handleItemChosen} className={styles.item}>
+    <li key={props.name} onClick={handleItemChosen} className={styles.item}>
       {props.name}
     </li>
   );

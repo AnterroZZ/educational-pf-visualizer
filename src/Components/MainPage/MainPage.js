@@ -40,20 +40,21 @@ export const populateNodes = () => {
   return nodes;
 };
 
-const clearPaths = (allNodes) => {
-  const workOnNodes = JSON.parse(JSON.stringify(allNodes));
-  for (let row = 0; row < workOnNodes.length; row++) {
-    for (let column = 0; column < workOnNodes[0].length; column++) {
-      const currentNode = workOnNodes[row][column];
+let nodes = populateNodes();
+
+const clearPaths = () => {
+  for (let row = 0; row < nodes.length; row++) {
+    for (let column = 0; column < nodes[0].length; column++) {
+      const currentNode = nodes[row][column];
       if (currentNode.type === "visited" || currentNode.type === "path") {
-        workOnNodes[row][column] = {
+        nodes[row][column] = {
           ...currentNode,
           type: "clear",
           distance: Infinity,
         };
       }
       if (currentNode.type === "end") {
-        workOnNodes[row][column] = {
+        nodes[row][column] = {
           ...currentNode,
           type: "end",
           distance: Infinity,
@@ -61,12 +62,10 @@ const clearPaths = (allNodes) => {
       }
     }
   }
-
-  return workOnNodes;
 };
 
 const MainPage = () => {
-  const [nodes, setNodes] = useState(populateNodes());
+  // const [nodes, setNodes] = useState(populateNodes());
   const [previousNode, setPreviousNode] = useState({ row: 0, column: 0 });
   const [isInDrawingMode, setIsInDrawingMode] = useState(false);
   const [isInBlockedState, setIsInBlockedState] = useState(false);
@@ -83,10 +82,10 @@ const MainPage = () => {
   } = useAlgorithm();
 
   useEffect(() => {
-    setNodes(populateNodes());
+    nodes = populateNodes();
     setAlgoStats({ distance: 0, numberOfVisited: 0, timeTaken: 0 });
     setCurrentAlgorithm("None");
-  }, [clear]);
+  }, [clear, setAlgoStats, setCurrentAlgorithm]);
 
   //Generating maze
   useEffect(() => {
@@ -94,12 +93,12 @@ const MainPage = () => {
       case "Recursive backtracking":
         setCurrentMazeAlgorithm("Default");
         setCurrentAlgorithm("None");
-        generateMaze(currentMazeAlgorithm, nodes);
+        generateMaze(currentMazeAlgorithm);
         break;
       case "Random maze":
         setCurrentMazeAlgorithm("Default");
         setCurrentAlgorithm("None");
-        generateMaze(currentMazeAlgorithm, nodes);
+        generateMaze(currentMazeAlgorithm);
         break;
       default:
         console.log("No such maze generating algo!");
@@ -108,103 +107,100 @@ const MainPage = () => {
 
   //Executing pathfinding algorithms
   useEffect(() => {
-    setNodes(clearPaths(nodes));
-    const copyOfNodes = clearPaths(JSON.parse(JSON.stringify(nodes)));
+    clearPaths();
     switch (currentAlgorithm) {
       case "Dijkstra's algorithm":
-        const dijkstraNodes = dijkstra(copyOfNodes);
+        const dijkstraNodes = dijkstra(nodes);
         setAlgoStats(dijkstraNodes.statistics);
-        animateAlgo(dijkstraNodes, copyOfNodes, 2);
+        animateAlgo(dijkstraNodes, 2);
         break;
       case "A* search":
-        const astarNodes = astar(copyOfNodes);
+        const astarNodes = astar(nodes);
         setAlgoStats(astarNodes.statistics);
-        animateAlgo(astarNodes, copyOfNodes, 4);
+        animateAlgo(astarNodes, 4);
         break;
       case "Breadth first search":
-        const breadthNodes = breadth(copyOfNodes);
+        const breadthNodes = breadth(nodes);
         setAlgoStats(breadthNodes.statistics);
-        animateAlgo(breadthNodes, copyOfNodes, 2);
+        animateAlgo(breadthNodes, 2);
         break;
       case "Best first search":
-        const bestNodes = best(copyOfNodes);
+        const bestNodes = best(nodes);
         setAlgoStats(bestNodes.statistics);
-        animateAlgo(bestNodes, copyOfNodes, 2);
+        animateAlgo(bestNodes, 2);
         break;
       case "Depth first search":
-        const depthNodes = depth(copyOfNodes);
+        const depthNodes = depth(nodes);
         setAlgoStats(depthNodes.statistics);
-        animateAlgo(depthNodes, copyOfNodes, 2);
+        animateAlgo(depthNodes, 2);
         break;
+      default:
+        console.log("No such algorithm defined");
     }
   }, [currentAlgorithm]);
 
-  const updateNodes = (nodes, col, row, type, prevType = type) => {
-    const newNodes = JSON.parse(JSON.stringify(nodes));
+  const updateNodes = (col, row, type, prevType = type) => {
     const node = nodes[row][col];
     const newNode = { ...node, type: type, prevType: prevType };
-    newNodes[row][col] = newNode;
-    setNodes(newNodes);
+    nodes[row][col] = newNode;
+    document.getElementById(`node-${row}-${col}`).className = type;
   };
 
   const moveStartEnd = (row, col, prevRow, prevCol, type) => {
-    let copyOfNodes = JSON.parse(JSON.stringify(nodes));
-    const newNode = copyOfNodes[row][col];
-    const prevNode = copyOfNodes[prevRow][prevCol];
+    const newNode = nodes[row][col];
+    const prevNode = nodes[prevRow][prevCol];
     const newUpdatedNode = { ...newNode, type: type, prevType: newNode.type };
     const prevUpdatedNode = { ...prevNode, type: prevNode.prevType };
-    copyOfNodes[row][col] = newUpdatedNode;
-    copyOfNodes[prevRow][prevCol] = prevUpdatedNode;
+    nodes[row][col] = newUpdatedNode;
+    nodes[prevRow][prevCol] = prevUpdatedNode;
     switch (currentAlgorithm) {
       case "Dijkstra's algorithm":
-        copyOfNodes = clearPaths(copyOfNodes);
-        const dijkstraNodes = dijkstra(copyOfNodes);
+        clearPaths();
+        const dijkstraNodes = dijkstra(nodes);
         setAlgoStats(dijkstraNodes.statistics);
-        animateAlgo(dijkstraNodes, copyOfNodes, 0);
+        animateAlgo(dijkstraNodes, 0);
         break;
       case "A* search":
-        copyOfNodes = clearPaths(copyOfNodes);
-        const astarNodes = astar(copyOfNodes);
+        clearPaths();
+        const astarNodes = astar(nodes);
         setAlgoStats(astarNodes.statistics);
-        animateAlgo(astarNodes, copyOfNodes, 0);
+        animateAlgo(astarNodes, 0);
         break;
       case "Breadth first search":
-        copyOfNodes = clearPaths(copyOfNodes);
-        const breadthNodes = breadth(copyOfNodes);
+        clearPaths();
+        const breadthNodes = breadth(nodes);
         setAlgoStats(breadthNodes.statistics);
-        animateAlgo(breadthNodes, copyOfNodes, 0);
+        animateAlgo(breadthNodes, 0);
         break;
       case "Best first search":
-        copyOfNodes = clearPaths(copyOfNodes);
-        const bestNodes = best(copyOfNodes);
+        clearPaths();
+        const bestNodes = best(nodes);
         setAlgoStats(bestNodes.statistics);
-        animateAlgo(bestNodes, copyOfNodes, 0);
+        animateAlgo(bestNodes, 0);
         break;
       default:
-        setNodes(copyOfNodes);
     }
   };
 
-  const animateAlgo = (stack, currentNodes, time) => {
+  const animateAlgo = (stack, time) => {
     setIsInBlockedState(true);
     const { nodesOrder, pathOrder, statistics } = stack;
     console.log(statistics);
-    const newNodes = JSON.parse(JSON.stringify(currentNodes));
 
     //Used to move around end and start node
     if (time === 0) {
       nodesOrder.forEach((currNode, indx) => {
         document.getElementById(`node-${currNode.row}-${currNode.column}`).className = `${nodeStyles.visited}`;
 
-        newNodes[currNode.row][currNode.column] = {
+        nodes[currNode.row][currNode.column] = {
           ...currNode,
           type: "visited",
         };
         if (nodesOrder.length === indx + 1) {
-          setNodes(newNodes);
+          // setNodes(newNodes);
           if (pathOrder.length === 0) {
             setIsInBlockedState(false);
-          } else animatePath(pathOrder, newNodes, time);
+          } else animatePath(pathOrder, time);
         }
       });
     } else
@@ -212,28 +208,27 @@ const MainPage = () => {
         setTimeout(() => {
           document.getElementById(`node-${currNode.row}-${currNode.column}`).className = `${nodeStyles.visited}`;
 
-          newNodes[currNode.row][currNode.column] = {
+          nodes[currNode.row][currNode.column] = {
             ...currNode,
             type: "visited",
           };
           if (nodesOrder.length === indx + 1) {
-            setNodes(newNodes);
+            // setNodes(newNodes);
             if (pathOrder.length === 0) {
               setIsInBlockedState(false);
-            } else animatePath(pathOrder, newNodes, time);
+            } else animatePath(pathOrder, nodes, time);
           }
         }, time * indx);
       });
   };
 
-  const animatePath = (stack, currentNodes, time) => {
-    const nooods = JSON.parse(JSON.stringify(currentNodes));
+  const animatePath = (stack, time) => {
     if (time === 0) {
       stack.forEach((currNode, indx) => {
         document.getElementById(`node-${currNode.row}-${currNode.column}`).className = `${nodeStyles.path}`;
-        nooods[currNode.row][currNode.column].type = "path";
+        nodes[currNode.row][currNode.column].type = "path";
         if (stack.length === indx + 1) {
-          setNodes(nooods);
+          // setNodes(nooods);
           setIsInBlockedState(false);
         }
       });
@@ -241,23 +236,26 @@ const MainPage = () => {
       stack.forEach((currNode, indx) => {
         setTimeout(() => {
           document.getElementById(`node-${currNode.row}-${currNode.column}`).className = `${nodeStyles.path}`;
-          nooods[currNode.row][currNode.column].type = "path";
+          nodes[currNode.row][currNode.column].type = "path";
           if (stack.length === indx + 1) {
-            setNodes(nooods);
+            // setNodes(nooods);
             setIsInBlockedState(false);
           }
         }, 20 * indx);
       });
   };
 
-  const generateMaze = (currentMazeAlgorithm, nodes) => {
+  const generateMaze = (currentMazeAlgorithm) => {
     let stack = [];
+    debugger;
     switch (currentMazeAlgorithm) {
       case "Recursive backtracking":
-        stack = recursive(clearPaths(nodes));
+        clearPaths();
+        stack = recursive(nodes);
         break;
       case "Random maze":
-        stack = randomMaze(clearPaths(nodes));
+        clearPaths();
+        stack = randomMaze(nodes);
         break;
       default:
         console.log("No such maze generating algo!");
@@ -270,46 +268,39 @@ const MainPage = () => {
 
   const eduMazeAnimation = (stack) => {
     setIsInBlockedState(true);
-    const newNodesAnim = JSON.parse(JSON.stringify(nodes));
-    const newNodes = JSON.parse(JSON.stringify(nodes));
 
     //Transform all nodes to wall type
     for (let row = 0; row < nodes.length; row++) {
       for (let column = 0; column < nodes[0].length; column++) {
-        const currentNode = newNodes[row][column];
+        const currentNode = nodes[row][column];
         if (!(currentNode.type === "start" || currentNode.type === "end")) {
           document.getElementById(`node-${currentNode.row}-${currentNode.column}`).className = `${nodeStyles.wall}`;
-          newNodes[row][column] = { ...nodes[row][column], type: "wall" };
+          nodes[row][column] = { ...nodes[row][column], type: "wall" };
         }
       }
     }
 
     stack.forEach((currNode, indx) => {
       const { node, type } = currNode;
-      const nodeType = newNodesAnim[node.row][node.column].type;
+      const nodeType = nodes[node.row][node.column].type;
       if (animationSpeed === 0) {
         if (!(nodeType === "start" || nodeType === "end")) {
-          newNodes[node.row][node.column].type = "clear";
-          setNodes(newNodes);
+          nodes[node.row][node.column].type = "clear";
           setIsInBlockedState(false);
         }
       } else {
         setTimeout(() => {
           if (!(nodeType === "start" || nodeType === "end")) {
             if (type === "clear") {
-              document.getElementById(`node-${node.row}-${node.column}`).className = `${nodeStyles.node}`;
-              newNodesAnim[node.row][node.column].type = "clear";
+              document.getElementById(`node-${node.row}-${node.column}`).className = `${nodeStyles.clear}`;
+              nodes[node.row][node.column].type = "clear";
             } else {
               document.getElementById(`node-${node.row}-${node.column}`).className = `${nodeStyles.visited}`;
-              newNodesAnim[node.row][node.column].type = "visited";
+              nodes[node.row][node.column].type = "visited";
             }
-            newNodes[node.row][node.column].type = "clear";
           }
           if (stack.length === indx + 1) {
-            setTimeout(() => {
-              setNodes(newNodes);
-              setIsInBlockedState(false);
-            }, 500);
+            setIsInBlockedState(false);
           }
         }, 1000 + indx * animationSpeed);
       }
@@ -318,9 +309,8 @@ const MainPage = () => {
 
   const classicMazeAnimation = (stack) => {
     setIsInBlockedState(true);
-    const newNodes = JSON.parse(JSON.stringify(nodes)).flat();
-    const nooods = JSON.parse(JSON.stringify(nodes));
-    const onlyWalls = newNodes.filter((arrNode) => {
+    //TODO: FIX THAT SHIT
+    const onlyWalls = nodes.flat().filter((arrNode) => {
       let x = true;
       stack.forEach((stackElem) => {
         const { node } = stackElem;
@@ -331,10 +321,10 @@ const MainPage = () => {
 
     for (let row = 0; row < nodes.length; row++) {
       for (let column = 0; column < nodes[0].length; column++) {
-        const currentNode = nooods[row][column];
+        const currentNode = nodes[row][column];
         if (!(currentNode.type === "start" || currentNode.type === "end")) {
-          document.getElementById(`node-${currentNode.row}-${currentNode.column}`).className = `${nodeStyles.node}`;
-          nooods[row][column] = { ...nodes[row][column], type: "clear" };
+          document.getElementById(`node-${currentNode.row}-${currentNode.column}`).className = `${nodeStyles.clear}`;
+          nodes[row][column] = { ...nodes[row][column], type: "clear" };
         }
       }
     }
@@ -344,11 +334,11 @@ const MainPage = () => {
         if (!(currNode.type === "start" || currNode.type === "end")) {
           document.getElementById(`node-${currNode.row}-${currNode.column}`).className = `${nodeStyles.wall}`;
 
-          nooods[currNode.row][currNode.column].type = "wall";
+          nodes[currNode.row][currNode.column].type = "wall";
         }
         if (onlyWalls.length === indx + 1) {
           setTimeout(() => {
-            setNodes(nooods);
+            // setNodes(nooods);
             setIsInBlockedState(false);
           }, 500);
         }
@@ -376,7 +366,6 @@ const MainPage = () => {
                   setDrawingType={setDrawingType}
                   node={node}
                   nodes={nodes}
-                  setNodes={setNodes}
                   setPreviousNode={setPreviousNode}
                   previousNode={previousNode}
                   isInBlockedState={isInBlockedState}

@@ -3,7 +3,6 @@ import { find, findNeighbours, findNodesOrderToStart } from "./pathfindingUtils"
 export function depth(nodes) {
   const algoNodes = JSON.parse(JSON.stringify(nodes));
   const startingNode = find("start", algoNodes);
-  const endingNode = find("end", algoNodes);
   const priorityQueue = [];
   const nodesOrder = [];
   let pathOrder = [];

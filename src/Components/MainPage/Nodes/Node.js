@@ -9,7 +9,6 @@ const Node = ({
   row,
   column,
   onMoveStartEnd,
-  nodes,
   updateNodes,
   isInBlockedState,
   setPreviousNode,
@@ -17,42 +16,25 @@ const Node = ({
 }) => {
   const handleOnEnter = () => {
     if (isInDrawingMode) {
-      let node = nodes[row][column];
       switch (drawingType) {
         case "wall":
-          if (
-            node.type === "clear" ||
-            node.type === "visited" ||
-            node.type === "path"
-          ) {
-            updateNodes(nodes, column, row, "wall", node.type);
+          if (node.type === "clear" || node.type === "visited" || node.type === "path") {
+            updateNodes(column, row, "wall", node.type);
           }
           break;
         case "clear":
           if (node.type === "wall") {
             node.prevType === "wall"
-              ? updateNodes(nodes, column, row, "clear", "wall")
-              : updateNodes(nodes, column, row, node.prevType, "wall");
+              ? updateNodes(column, row, "clear", "wall")
+              : updateNodes(column, row, node.prevType, "wall");
           }
           break;
         case "start":
-          onMoveStartEnd(
-            row,
-            column,
-            previousNode.row,
-            previousNode.column,
-            "start"
-          );
+          onMoveStartEnd(row, column, previousNode.row, previousNode.column, "start");
 
           break;
         case "end":
-          onMoveStartEnd(
-            row,
-            column,
-            previousNode.row,
-            previousNode.column,
-            "end"
-          );
+          onMoveStartEnd(row, column, previousNode.row, previousNode.column, "end");
           break;
         default:
           console.error("Invalid drawing type: ", drawingType);
@@ -70,26 +52,19 @@ const Node = ({
       case "visited":
       case "path":
         setDrawingType("wall");
-        updateNodes(nodes, column, row, "wall", node.type);
-
-        console.log("Drawing type set to wall");
+        updateNodes(column, row, "wall", node.type);
         break;
       case "wall":
         setDrawingType("clear");
         node.prevType === "wall"
-          ? updateNodes(nodes, column, row, "clear", "wall")
-          : updateNodes(nodes, column, row, node.prevType, "wall");
-
-        console.log("Drawing type set to clear");
+          ? updateNodes(column, row, "clear", "wall")
+          : updateNodes(column, row, node.prevType, "wall");
         break;
       case "start":
         setDrawingType("start");
-        console.log("Moving starting node");
         break;
       case "end":
         setDrawingType("end");
-
-        console.log("Moving ending node");
         break;
       default:
         break;
@@ -106,11 +81,9 @@ const Node = ({
       }}
       onMouseEnter={handleOnEnter}
       onMouseOver={handleOnLeave}
-      className={`${node.type === "clear" ? styles.node : ""} ${
-        node.type === "wall" ? styles.wall : ""
-      }  ${node.type === "visited" ? styles.visited : ""} ${
-        node.type === "path" ? styles.path : ""
-      } ${node.type === "start" ? styles.start : ""}${
+      className={`${node.type === "clear" ? styles.clear : ""} ${node.type === "wall" ? styles.wall : ""}  ${
+        node.type === "visited" ? styles.visited : ""
+      } ${node.type === "path" ? styles.path : ""} ${node.type === "start" ? styles.start : ""}${
         node.type === "end" ? styles.end : ""
       } `}
     >
