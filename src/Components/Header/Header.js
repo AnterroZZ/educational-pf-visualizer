@@ -6,6 +6,8 @@ import { useAlgorithm } from "../Contex/AlgorithmsContext";
 import Button from "../UI/Button/Button";
 import { useState } from "react";
 import { useControls } from "../Contex/ControlsContext";
+import plFlag from "../../flags/pl.svg";
+import enFlag from "../../flags/gb.svg";
 
 const Header = () => {
   const {
@@ -16,7 +18,7 @@ const Header = () => {
     setAnimationSpeed,
     currentAlgorithm,
   } = useAlgorithm();
-  const { setClear } = useControls();
+  const { setClear, language, setLanguage } = useControls();
   const [animationSpeedText, setAnimationSpeedText] = useState("Normal");
 
   const pathfindingAlgosList = [
@@ -55,37 +57,52 @@ const Header = () => {
     event.stopPropagation();
   };
 
-  return (
-    <div className={styles.wraper}>
-      <h2>Pathfinding algorithms</h2>
-      <h2 className={styles.divider}>/</h2>
-      <Picker name="Algorithms">
-        <DropdownMenu>
-          {pathfindingAlgosList.map((item) => {
-            return <DropdownItem key={item} onClick={handleAlgoritmsChosen} name={item} />;
-          })}
-        </DropdownMenu>
-      </Picker>
-      <h3>/</h3>
-      <Picker name="Generate maze">
-        <DropdownMenu>
-          <p className={styles.subtitle}>Animation style</p>
-          <Button text={currentAnimationStyle} onClick={handleOnAnimationChange} />
-          <p className={styles.subtitle}>Animation speed</p>
-          <Button text={animationSpeedText} onClick={handleChangeOfMazeAnimationSpeed} />
-          <hr />
-          <DropdownItem onClick={handleMazeChosen} name={"Random maze"} />
+  const handleLanguageChange = () => {
+    language === "english" ? setLanguage("polish") : setLanguage("english");
+  };
 
-          <DropdownItem onClick={handleMazeChosen} name={"Recursive backtracking"} />
-        </DropdownMenu>
-      </Picker>
-      <h2 className={styles.divider}>/</h2>
-      {/* <Controls /> */}
-      <p className={styles.clearButton} onClick={() => setClear((prev) => !prev)}>
-        Clear walls
-      </p>
-      <h2 className={styles.divider}>/</h2>
-      <p className={styles.currentAlgo}>Current algorithm: {currentAlgorithm}</p>
+  return (
+    <div className={styles.mainWrapper}>
+      <div className={styles.wraper}>
+        <h2>Pathfinding algorithms</h2>
+        <h2 className={styles.divider}>/</h2>
+        <Picker name="Algorithms">
+          <DropdownMenu>
+            {pathfindingAlgosList.map((item) => {
+              return <DropdownItem key={item} onClick={handleAlgoritmsChosen} name={item} />;
+            })}
+          </DropdownMenu>
+        </Picker>
+        <h3>/</h3>
+        <Picker name="Generate maze">
+          <DropdownMenu>
+            <p className={styles.subtitle}>Animation style</p>
+            <Button text={currentAnimationStyle} onClick={handleOnAnimationChange} />
+            <p className={styles.subtitle}>Animation speed</p>
+            <Button text={animationSpeedText} onClick={handleChangeOfMazeAnimationSpeed} />
+            <hr />
+            <DropdownItem onClick={handleMazeChosen} name={"Random maze"} />
+
+            <DropdownItem onClick={handleMazeChosen} name={"Recursive backtracking"} />
+          </DropdownMenu>
+        </Picker>
+        <h2 className={styles.divider}>/</h2>
+        {/* <Controls /> */}
+        <p className={styles.clearButton} onClick={() => setClear((prev) => !prev)}>
+          Clear walls
+        </p>
+        <h3>/</h3>
+        <p className={styles.clearButton} onClick={() => setClear((prev) => !prev)}>
+          Reset board
+        </p>
+        <h2 className={styles.divider}>/</h2>
+        <p className={styles.currentAlgo}>Current algorithm: {currentAlgorithm}</p>
+      </div>
+      <img
+        onClick={handleLanguageChange}
+        src={language === "english" ? enFlag : plFlag}
+        className={styles.english}
+      ></img>
     </div>
   );
 };

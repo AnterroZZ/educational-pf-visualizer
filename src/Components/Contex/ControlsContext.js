@@ -4,11 +4,14 @@ export const Controlls = createContext();
 
 export const ControlsContext = (props) => {
   const [clear, setClear] = useState(false);
+  const [language, setLanguage] = useState("english");
   return (
     <Controlls.Provider
       value={{
         clear,
         setClear,
+        language,
+        setLanguage,
       }}
     >
       {props.children}
