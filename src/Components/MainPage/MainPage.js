@@ -11,7 +11,6 @@ import { astar } from "../../algorithms/pathfinding/astar";
 import { breadth } from "../../algorithms/pathfinding/breadth";
 import { best } from "../../algorithms/pathfinding/best";
 import { depth } from "../../algorithms/pathfinding/depth";
-import { find } from "../../algorithms/pathfinding/pathfindingUtils";
 
 // Node types are: clear, wall, start, end, visited
 function singleNode(id, row, column) {
@@ -183,7 +182,7 @@ const MainPage = () => {
     }
 
     if (currentAlgoNodes) {
-      if (currentAlgoNodes.statistics.distance !== 0) {
+      if (currentAlgoNodes.nodesOrder !== 0) {
         animateAlgo(currentAlgoNodes, 0);
       }
     }
@@ -191,7 +190,7 @@ const MainPage = () => {
 
   const animateAlgo = (stack, time) => {
     setIsInBlockedState(true);
-    const { nodesOrder, pathOrder, statistics } = stack;
+    const { nodesOrder, pathOrder } = stack;
 
     //Used to move around end and start node
     if (time === 0) {
