@@ -13,7 +13,6 @@ export function generateMaze(mazeAlgorithm, nodes, animationStyle) {
       stack = randomMaze(workOnNodes);
       break;
     default:
-      console.log("No such maze generating algo!");
   }
   if (stack.length !== 0) {
     if (animationStyle === "Classic") {
@@ -31,9 +30,7 @@ const eduMazeAnimation = (stack, nodes) => {
     for (let column = 0; column < nodes[0].length; column++) {
       const currentNode = newNodes[row][column];
       if (!(currentNode.type === "start" || currentNode.type === "end")) {
-        document.getElementById(
-          `node-${currentNode.row}-${currentNode.column}`
-        ).className = `${nodeStyles.wall}`;
+        document.getElementById(`node-${currentNode.row}-${currentNode.column}`).className = `${nodeStyles.wall}`;
         newNodes[row][column] = { ...nodes[row][column], type: "wall" };
       }
     }
@@ -52,14 +49,10 @@ const eduMazeAnimation = (stack, nodes) => {
       setTimeout(() => {
         if (!(nodeType === "start" || nodeType === "end")) {
           if (type === "clear") {
-            document.getElementById(
-              `node-${node.row}-${node.column}`
-            ).className = `${nodeStyles.node}`;
+            document.getElementById(`node-${node.row}-${node.column}`).className = `${nodeStyles.node}`;
             newNodesAnim[node.row][node.column].type = "clear";
           } else {
-            document.getElementById(
-              `node-${node.row}-${node.column}`
-            ).className = `${nodeStyles.visited}`;
+            document.getElementById(`node-${node.row}-${node.column}`).className = `${nodeStyles.visited}`;
             newNodesAnim[node.row][node.column].type = "visited";
           }
           newNodes[node.row][node.column].type = "clear";
@@ -90,9 +83,7 @@ const classicMazeAnimation = async (stack, nodes) => {
     for (let column = 0; column < nodes[0].length; column++) {
       const currentNode = nooods[row][column];
       if (!(currentNode.type === "start" || currentNode.type === "end")) {
-        document.getElementById(
-          `node-${currentNode.row}-${currentNode.column}`
-        ).className = `${nodeStyles.node}`;
+        document.getElementById(`node-${currentNode.row}-${currentNode.column}`).className = `${nodeStyles.node}`;
         nooods[row][column] = { ...nodes[row][column], type: "clear" };
       }
     }
@@ -101,9 +92,7 @@ const classicMazeAnimation = async (stack, nodes) => {
   onlyWalls.forEach((currNode, indx) => {
     setTimeout(() => {
       if (!(currNode.type === "start" || currNode.type === "end")) {
-        document.getElementById(
-          `node-${currNode.row}-${currNode.column}`
-        ).className = `${nodeStyles.wall}`;
+        document.getElementById(`node-${currNode.row}-${currNode.column}`).className = `${nodeStyles.wall}`;
 
         nooods[currNode.row][currNode.column].type = "wall";
       }

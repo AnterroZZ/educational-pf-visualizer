@@ -8,21 +8,20 @@ export function breadth(nodes) {
   const nodesOrder = [];
   let pathOrder = [];
   let endNodeDistance = 0;
-  const startTime = performance.now();
 
   if (!startingNode || !endingNode) {
-    const endTime = performance.now();
-    const timeTaken = endTime - startTime;
     return {
-      nodesOrder,
-      pathOrder,
+      nodesOrder: 0,
+      pathOrder: 0,
       statistics: {
         distance: 0,
-        numberOfVisited: nodesOrder.length,
-        timeTaken: timeTaken,
+        numberOfVisited: 0,
+        timeTaken: 0,
       },
     };
   }
+
+  const startTime = performance.now();
 
   algoNodes[startingNode.row][startingNode.column] = {
     ...startingNode,

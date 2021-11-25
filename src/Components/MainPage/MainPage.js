@@ -11,6 +11,7 @@ import { astar } from "../../algorithms/pathfinding/astar";
 import { breadth } from "../../algorithms/pathfinding/breadth";
 import { best } from "../../algorithms/pathfinding/best";
 import { depth } from "../../algorithms/pathfinding/depth";
+import { find } from "../../algorithms/pathfinding/pathfindingUtils";
 
 // Node types are: clear, wall, start, end, visited
 function singleNode(id, row, column) {
@@ -101,41 +102,35 @@ const MainPage = () => {
         generateMaze(currentMazeAlgorithm);
         break;
       default:
-        console.log("No such maze generating algo!");
     }
   }, [currentMazeAlgorithm]);
 
   //Executing pathfinding algorithms
   useEffect(() => {
     clearPaths();
+    let currentAlgoNodes;
     switch (currentAlgorithm) {
       case "Dijkstra's algorithm":
-        const dijkstraNodes = dijkstra(nodes);
-        setAlgoStats(dijkstraNodes.statistics);
-        animateAlgo(dijkstraNodes, 2);
+        currentAlgoNodes = dijkstra(nodes);
         break;
       case "A* search":
-        const astarNodes = astar(nodes);
-        setAlgoStats(astarNodes.statistics);
-        animateAlgo(astarNodes, 4);
+        currentAlgoNodes = astar(nodes);
         break;
       case "Breadth first search":
-        const breadthNodes = breadth(nodes);
-        setAlgoStats(breadthNodes.statistics);
-        animateAlgo(breadthNodes, 2);
+        currentAlgoNodes = breadth(nodes);
         break;
       case "Best first search":
-        const bestNodes = best(nodes);
-        setAlgoStats(bestNodes.statistics);
-        animateAlgo(bestNodes, 2);
+        currentAlgoNodes = best(nodes);
         break;
       case "Depth first search":
-        const depthNodes = depth(nodes);
-        setAlgoStats(depthNodes.statistics);
-        animateAlgo(depthNodes, 2);
+        currentAlgoNodes = depth(nodes);
         break;
       default:
-        console.log("No such algorithm defined");
+    }
+
+    if (currentAlgoNodes) {
+      setAlgoStats(currentAlgoNodes.statistics);
+      animateAlgo(currentAlgoNodes, 2);
     }
   }, [currentAlgorithm]);
 
@@ -150,42 +145,53 @@ const MainPage = () => {
     const newNode = nodes[row][col];
     const prevNode = nodes[prevRow][prevCol];
     const newUpdatedNode = { ...newNode, type: type, prevType: newNode.type };
-    const prevUpdatedNode = { ...prevNode, type: prevNode.prevType };
+    if (prevNode.type === "start" || prevNode.type === "end") {
+      const prevUpdatedNode = { ...prevNode, type: prevNode.prevType, prevType: "clear" };
+      nodes[prevRow][prevCol] = prevUpdatedNode;
+    } else {
+      nodes[prevRow][prevCol] = { ...prevNode, type: prevNode.prevType };
+    }
     nodes[row][col] = newUpdatedNode;
-    nodes[prevRow][prevCol] = prevUpdatedNode;
+    let currentAlgoNodes;
     switch (currentAlgorithm) {
       case "Dijkstra's algorithm":
         clearPaths();
-        const dijkstraNodes = dijkstra(nodes);
-        setAlgoStats(dijkstraNodes.statistics);
-        animateAlgo(dijkstraNodes, 0);
+        currentAlgoNodes = dijkstra(nodes);
+        setAlgoStats(currentAlgoNodes.statistics);
         break;
       case "A* search":
         clearPaths();
-        const astarNodes = astar(nodes);
-        setAlgoStats(astarNodes.statistics);
-        animateAlgo(astarNodes, 0);
+        currentAlgoNodes = astar(nodes);
+        setAlgoStats(currentAlgoNodes.statistics);
         break;
       case "Breadth first search":
         clearPaths();
-        const breadthNodes = breadth(nodes);
-        setAlgoStats(breadthNodes.statistics);
-        animateAlgo(breadthNodes, 0);
+        currentAlgoNodes = breadth(nodes);
+        setAlgoStats(currentAlgoNodes.statistics);
         break;
       case "Best first search":
         clearPaths();
-        const bestNodes = best(nodes);
-        setAlgoStats(bestNodes.statistics);
-        animateAlgo(bestNodes, 0);
+        currentAlgoNodes = best(nodes);
+        setAlgoStats(currentAlgoNodes.statistics);
+        break;
+      case "Depth first search":
+        clearPaths();
+        currentAlgoNodes = depth(nodes);
+        setAlgoStats(currentAlgoNodes.statistics);
         break;
       default:
+    }
+
+    if (currentAlgoNodes) {
+      if (currentAlgoNodes.statistics.distance !== 0) {
+        animateAlgo(currentAlgoNodes, 0);
+      }
     }
   };
 
   const animateAlgo = (stack, time) => {
     setIsInBlockedState(true);
     const { nodesOrder, pathOrder, statistics } = stack;
-    console.log(statistics);
 
     //Used to move around end and start node
     if (time === 0) {
@@ -258,7 +264,6 @@ const MainPage = () => {
         stack = randomMaze(nodes);
         break;
       default:
-        console.log("No such maze generating algo!");
     }
 
     if (currentAnimationStyle === "Classic") {

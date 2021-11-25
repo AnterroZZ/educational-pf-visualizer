@@ -2,24 +2,36 @@ import { find, findNeighbours, findNodesOrderToStart } from "./pathfindingUtils"
 
 export function astar(nodes) {
   const algoNodes = JSON.parse(JSON.stringify(nodes));
-  let startingNode = find("start", algoNodes);
+  const startNode = find("start", algoNodes);
   const endingNode = find("end", algoNodes);
+  console.log(startNode);
   const priorityQueue = [];
   const nodesOrder = [];
   let pathOrder = [];
   let endNodeDistance = 0;
   const startTime = performance.now();
+  //No start or end node
 
-  //TODO: No starting or ending node
+  if (!startNode || !endingNode) {
+    return {
+      nodesOrder: 0,
+      pathOrder: 0,
+      statistics: {
+        distance: 0,
+        numberOfVisited: 0,
+        timeTaken: 0,
+      },
+    };
+  }
 
-  algoNodes[startingNode.row][startingNode.column] = {
-    ...startingNode,
+  algoNodes[startNode.row][startNode.column] = {
+    ...startNode,
     distance: 0,
     g: 0,
     h: 0,
   };
 
-  startingNode = algoNodes[startingNode.row][startingNode.column];
+  const startingNode = algoNodes[startNode.row][startNode.column];
   priorityQueue.push(startingNode);
 
   while (priorityQueue.length > 0) {
@@ -36,9 +48,7 @@ export function astar(nodes) {
     }
 
     const neighbours = findNeighbours(currentNode, algoNodes);
-    if (currentNode.row === 9 && currentNode.column === 11) {
-      console.log("x");
-    }
+
     if (neighbours.length !== 0) {
       for (let i = 0; i < neighbours.length; i++) {
         const g = currentNode.g + 1;

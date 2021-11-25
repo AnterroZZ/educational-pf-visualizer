@@ -8,9 +8,19 @@ export function best(nodes) {
   const nodesOrder = [];
   let pathOrder = [];
   let endNodeDistance = 0;
-  const startTime = performance.now();
 
-  //TODO: No starting or ending node
+  if (!startingNode || !endingNode) {
+    return {
+      nodesOrder: 0,
+      pathOrder: 0,
+      statistics: {
+        distance: 0,
+        numberOfVisited: 0,
+        timeTaken: 0,
+      },
+    };
+  }
+  const startTime = performance.now();
 
   algoNodes[startingNode.row][startingNode.column] = {
     ...startingNode,

@@ -11,7 +11,6 @@ const Sidebar = () => {
 
   useEffect(() => {
     if (algoStats.numberOfVisited > 0) {
-      console.log("Operations", algoStats.numberOfOperations);
       setIsStatOpen(true);
     }
   }, [algoStats]);
