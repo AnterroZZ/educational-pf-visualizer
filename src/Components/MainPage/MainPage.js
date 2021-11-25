@@ -88,7 +88,7 @@ const MainPage = () => {
     currentAnimationStyle,
     currentAlgorithm,
     setCurrentAlgorithm,
-    animationSpeed,
+    mazeAnimationSpeed,
     setAlgoStats,
     algoAnimationSpeed,
   } = useAlgorithm();
@@ -285,7 +285,7 @@ const MainPage = () => {
     stack.forEach((currNode, indx) => {
       const { node, type } = currNode;
       const nodeType = nodes[node.row][node.column].type;
-      if (animationSpeed === 0) {
+      if (mazeAnimationSpeed === 0) {
         if (!(nodeType === "start" || nodeType === "end")) {
           nodes[node.row][node.column].type = "clear";
           setIsInBlockedState(false);
@@ -304,7 +304,7 @@ const MainPage = () => {
           if (stack.length === indx + 1) {
             setIsInBlockedState(false);
           }
-        }, 1000 + indx * animationSpeed);
+        }, 1000 + indx * mazeAnimationSpeed);
       }
     });
   };
@@ -344,7 +344,7 @@ const MainPage = () => {
             setIsInBlockedState(false);
           }, 500);
         }
-      }, indx * animationSpeed);
+      }, indx * mazeAnimationSpeed);
     });
   };
   return (
