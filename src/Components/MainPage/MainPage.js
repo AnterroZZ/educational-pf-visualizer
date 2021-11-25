@@ -25,7 +25,7 @@ function singleNode(id, row, column) {
   };
 }
 
-export const populateNodes = () => {
+const populateNodes = () => {
   let nodes = [];
   for (let row = 0; row < 21; row++) {
     let currentRow = [];
@@ -36,6 +36,17 @@ export const populateNodes = () => {
       currentRow.push(node);
     }
     nodes.push(currentRow);
+  }
+  return nodes;
+};
+
+const clearWalls = (nodes) => {
+  for (let row = 0; row < nodes.length; row++) {
+    for (let column = 0; column < nodes[0].length; column++) {
+      if (nodes[row][column].type === "wall") {
+        nodes[row][column].type = "clear";
+      }
+    }
   }
   return nodes;
 };
@@ -70,7 +81,7 @@ const MainPage = () => {
   const [isInDrawingMode, setIsInDrawingMode] = useState(false);
   const [isInBlockedState, setIsInBlockedState] = useState(false);
   const [drawingType, setDrawingType] = useState("");
-  const { clear } = useControls();
+  const { clear, setClear } = useControls();
   const {
     currentMazeAlgorithm,
     setCurrentMazeAlgorithm,
@@ -79,12 +90,20 @@ const MainPage = () => {
     setCurrentAlgorithm,
     animationSpeed,
     setAlgoStats,
+    algoAnimationSpeed,
   } = useAlgorithm();
 
   useEffect(() => {
-    nodes = populateNodes();
-    setAlgoStats({ distance: 0, numberOfVisited: 0, timeTaken: 0 });
-    setCurrentAlgorithm("None");
+    if (clear === "clear") {
+      nodes = clearWalls(nodes);
+      executePathFinding(0);
+      setClear("none");
+    } else if (clear === "reset") {
+      nodes = populateNodes();
+      setAlgoStats({ distance: 0, numberOfVisited: 0, timeTaken: 0 });
+      setCurrentAlgorithm("None");
+      setClear("none");
+    }
   }, [clear, setAlgoStats, setCurrentAlgorithm]);
 
   //Generating maze
@@ -106,31 +125,7 @@ const MainPage = () => {
 
   //Executing pathfinding algorithms
   useEffect(() => {
-    clearPaths();
-    let currentAlgoNodes;
-    switch (currentAlgorithm) {
-      case "Dijkstra's algorithm":
-        currentAlgoNodes = dijkstra(nodes);
-        break;
-      case "A* search":
-        currentAlgoNodes = astar(nodes);
-        break;
-      case "Breadth first search":
-        currentAlgoNodes = breadth(nodes);
-        break;
-      case "Best first search":
-        currentAlgoNodes = best(nodes);
-        break;
-      case "Depth first search":
-        currentAlgoNodes = depth(nodes);
-        break;
-      default:
-    }
-
-    if (currentAlgoNodes) {
-      setAlgoStats(currentAlgoNodes.statistics);
-      animateAlgo(currentAlgoNodes, 2);
-    }
+    executePathFinding(algoAnimationSpeed);
   }, [currentAlgorithm]);
 
   const updateNodes = (col, row, type, prevType = type) => {
@@ -151,41 +146,7 @@ const MainPage = () => {
       nodes[prevRow][prevCol] = { ...prevNode, type: prevNode.prevType };
     }
     nodes[row][col] = newUpdatedNode;
-    let currentAlgoNodes;
-    switch (currentAlgorithm) {
-      case "Dijkstra's algorithm":
-        clearPaths();
-        currentAlgoNodes = dijkstra(nodes);
-        setAlgoStats(currentAlgoNodes.statistics);
-        break;
-      case "A* search":
-        clearPaths();
-        currentAlgoNodes = astar(nodes);
-        setAlgoStats(currentAlgoNodes.statistics);
-        break;
-      case "Breadth first search":
-        clearPaths();
-        currentAlgoNodes = breadth(nodes);
-        setAlgoStats(currentAlgoNodes.statistics);
-        break;
-      case "Best first search":
-        clearPaths();
-        currentAlgoNodes = best(nodes);
-        setAlgoStats(currentAlgoNodes.statistics);
-        break;
-      case "Depth first search":
-        clearPaths();
-        currentAlgoNodes = depth(nodes);
-        setAlgoStats(currentAlgoNodes.statistics);
-        break;
-      default:
-    }
-
-    if (currentAlgoNodes) {
-      if (currentAlgoNodes.nodesOrder !== 0) {
-        animateAlgo(currentAlgoNodes, 0);
-      }
-    }
+    executePathFinding(0);
   };
 
   const animateAlgo = (stack, time) => {
@@ -252,7 +213,6 @@ const MainPage = () => {
 
   const generateMaze = (currentMazeAlgorithm) => {
     let stack = [];
-    debugger;
     switch (currentMazeAlgorithm) {
       case "Recursive backtracking":
         clearPaths();
@@ -268,6 +228,44 @@ const MainPage = () => {
     if (currentAnimationStyle === "Classic") {
       classicMazeAnimation(stack);
     } else eduMazeAnimation(stack);
+  };
+
+  const executePathFinding = (time) => {
+    let currentAlgoNodes;
+    switch (currentAlgorithm) {
+      case "Dijkstra's algorithm":
+        clearPaths();
+        currentAlgoNodes = dijkstra(nodes);
+        setAlgoStats(currentAlgoNodes.statistics);
+        break;
+      case "A* search":
+        clearPaths();
+        currentAlgoNodes = astar(nodes);
+        setAlgoStats(currentAlgoNodes.statistics);
+        break;
+      case "Breadth first search":
+        clearPaths();
+        currentAlgoNodes = breadth(nodes);
+        setAlgoStats(currentAlgoNodes.statistics);
+        break;
+      case "Best first search":
+        clearPaths();
+        currentAlgoNodes = best(nodes);
+        setAlgoStats(currentAlgoNodes.statistics);
+        break;
+      case "Depth first search":
+        clearPaths();
+        currentAlgoNodes = depth(nodes);
+        setAlgoStats(currentAlgoNodes.statistics);
+        break;
+      default:
+    }
+
+    if (currentAlgoNodes) {
+      if (currentAlgoNodes.nodesOrder !== 0) {
+        animateAlgo(currentAlgoNodes, time);
+      }
+    }
   };
 
   const eduMazeAnimation = (stack) => {

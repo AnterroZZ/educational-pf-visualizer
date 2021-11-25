@@ -15,11 +15,13 @@ const Header = () => {
     setCurrentMazeAlgorithm,
     currentAnimationStyle,
     setCurrentAnimationStyle,
-    setAnimationSpeed,
+    setMazeAnimationSpeed,
     currentAlgorithm,
+    setAlgoAnimationSpeed,
   } = useAlgorithm();
   const { setClear, language, setLanguage } = useControls();
-  const [animationSpeedText, setAnimationSpeedText] = useState("Normal");
+  const [mazeAnimationSpeedText, setMazeAnimationSpeedText] = useState("Normal");
+  const [algoAnimationSpeedText, setAlgoAnimationSpeedText] = useState("Fast");
 
   const pathfindingAlgosList = [
     "A* search",
@@ -44,15 +46,29 @@ const Header = () => {
   };
 
   const handleChangeOfMazeAnimationSpeed = (event) => {
-    if (animationSpeedText === "Normal") {
-      setAnimationSpeed(4);
-      setAnimationSpeedText("Fast");
-    } else if (animationSpeedText === "Fast") {
-      setAnimationSpeed(20);
-      setAnimationSpeedText("Slow");
-    } else if (animationSpeedText === "Slow") {
-      setAnimationSpeed(10);
-      setAnimationSpeedText("Normal");
+    if (mazeAnimationSpeedText === "Normal") {
+      setMazeAnimationSpeed(4);
+      setMazeAnimationSpeedText("Fast");
+    } else if (mazeAnimationSpeedText === "Fast") {
+      setMazeAnimationSpeed(20);
+      setMazeAnimationSpeedText("Slow");
+    } else if (mazeAnimationSpeedText === "Slow") {
+      setMazeAnimationSpeed(10);
+      setMazeAnimationSpeedText("Normal");
+    }
+    event.stopPropagation();
+  };
+
+  const handleChangeOfAlgoAnimationSpeed = (event) => {
+    if (algoAnimationSpeedText === "Normal") {
+      setAlgoAnimationSpeed(2);
+      setAlgoAnimationSpeedText("Fast");
+    } else if (algoAnimationSpeedText === "Fast") {
+      setAlgoAnimationSpeed(20);
+      setAlgoAnimationSpeedText("Slow");
+    } else if (algoAnimationSpeedText === "Slow") {
+      setAlgoAnimationSpeed(8);
+      setAlgoAnimationSpeedText("Normal");
     }
     event.stopPropagation();
   };
@@ -68,6 +84,9 @@ const Header = () => {
         <h2 className={styles.divider}>/</h2>
         <Picker name="Algorithms">
           <DropdownMenu>
+            <p className={styles.subtitle}>Animation speed</p>
+            <Button text={algoAnimationSpeedText} onClick={handleChangeOfAlgoAnimationSpeed} />
+            <hr />
             {pathfindingAlgosList.map((item) => {
               return <DropdownItem key={item} onClick={handleAlgoritmsChosen} name={item} />;
             })}
@@ -79,7 +98,7 @@ const Header = () => {
             <p className={styles.subtitle}>Animation style</p>
             <Button text={currentAnimationStyle} onClick={handleOnAnimationChange} />
             <p className={styles.subtitle}>Animation speed</p>
-            <Button text={animationSpeedText} onClick={handleChangeOfMazeAnimationSpeed} />
+            <Button text={mazeAnimationSpeedText} onClick={handleChangeOfMazeAnimationSpeed} />
             <hr />
             <DropdownItem onClick={handleMazeChosen} name={"Random maze"} />
 
@@ -88,11 +107,11 @@ const Header = () => {
         </Picker>
         <h2 className={styles.divider}>/</h2>
         {/* <Controls /> */}
-        <p className={styles.clearButton} onClick={() => setClear((prev) => !prev)}>
+        <p className={styles.clearButton} onClick={() => setClear("clear")}>
           Clear walls
         </p>
         <h3>/</h3>
-        <p className={styles.clearButton} onClick={() => setClear((prev) => !prev)}>
+        <p className={styles.clearButton} onClick={() => setClear("reset")}>
           Reset board
         </p>
         <h2 className={styles.divider}>/</h2>

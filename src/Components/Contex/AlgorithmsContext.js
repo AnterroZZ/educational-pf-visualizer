@@ -6,7 +6,8 @@ export const AlgorithmsContext = (props) => {
   const [currentAlgorithm, setCurrentAlgorithm] = useState("");
   const [currentMazeAlgorithm, setCurrentMazeAlgorithm] = useState("");
   const [currentAnimationStyle, setCurrentAnimationStyle] = useState("Classic");
-  const [animationSpeed, setAnimationSpeed] = useState(5);
+  const [mazeAnimationSpeed, setMazeAnimationSpeed] = useState(5);
+  const [algoAnimationSpeed, setAlgoAnimationSpeed] = useState(2);
   const [algoStats, setAlgoStats] = useState({ distance: 0, numberOfVisited: 0, timeTaken: 0 });
   return (
     <AlgorithmsCont.Provider
@@ -17,8 +18,10 @@ export const AlgorithmsContext = (props) => {
         setCurrentMazeAlgorithm,
         currentAnimationStyle,
         setCurrentAnimationStyle,
-        animationSpeed,
-        setAnimationSpeed,
+        mazeAnimationSpeed,
+        setMazeAnimationSpeed,
+        algoAnimationSpeed,
+        setAlgoAnimationSpeed,
         setAlgoStats,
         algoStats,
       }}
