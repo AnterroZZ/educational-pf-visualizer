@@ -4,7 +4,6 @@ export function astar(nodes) {
   const algoNodes = JSON.parse(JSON.stringify(nodes));
   const startNode = find("start", algoNodes);
   const endingNode = find("end", algoNodes);
-  console.log(startNode);
   const priorityQueue = [];
   const nodesOrder = [];
   let pathOrder = [];

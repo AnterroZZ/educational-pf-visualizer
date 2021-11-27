@@ -37,7 +37,6 @@ const Header = () => {
 
   const handleMazeChosen = (name) => {
     setCurrentMazeAlgorithm(name);
-    console.log(name);
   };
 
   const handleOnAnimationChange = (event) => {

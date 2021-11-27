@@ -46,9 +46,6 @@ export function best(nodes) {
     }
 
     const neighbours = findNeighbours(currentNode, algoNodes);
-    if (currentNode.row === 9 && currentNode.column === 11) {
-      console.log("x");
-    }
     if (neighbours.length !== 0) {
       for (let i = 0; i < neighbours.length; i++) {
         const distance =
