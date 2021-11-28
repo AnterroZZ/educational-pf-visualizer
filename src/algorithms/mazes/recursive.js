@@ -6,14 +6,13 @@ function Neighbour(row, column) {
 }
 
 export const recursive = (nodes) => {
-  // debugger;
   const copyOfNodes = JSON.parse(JSON.stringify(nodes));
   const nodesOrder = [];
   const horizontal =
     nodes[nodes.length - 1].row - nodes[0].row > nodes[nodes.length - 1].column - nodes[0].column ? true : false;
   console.log(nodes[nodes.length - 1]);
-  const divideRow = range(nodes[0].row, nodes[nodes.length - 1].row);
-  const divideColumn = range(nodes[0].column, nodes[nodes.length - 1].column);
+  const divideRow = findEvenFromRange(nodes[0].row, nodes[nodes.length - 1].row);
+  const divideColumn = findEvenFromRange(nodes[0].column, nodes[nodes.length - 1].column);
   let divide = horizontal ? divideRow : divideColumn;
   if (nodes[nodes.length - 1].row - nodes[0].row === 0) {
     divide = divideColumn;
@@ -46,14 +45,11 @@ export const recursive = (nodes) => {
       }
     }
   });
-  // debugger;
 
-  // const passage = wallNodes[Math.floor(Math.random() * wallNodes.length)];
   if (horizontal) {
     nodesOrder.push(...wallNodes.filter((item) => item.node.column !== passage));
   } else nodesOrder.push(...wallNodes.filter((item) => item.node.row !== passage));
 
-  //execute two recursive on smaller nodes
   if (check(nodes1)) {
     nodesOrder.push(...recursive(nodes1));
   }
@@ -62,16 +58,14 @@ export const recursive = (nodes) => {
     nodesOrder.push(...recursive(nodes2));
   }
   return nodesOrder;
-  // const passage = horizontal ?
 };
 
 function findPassage(horizontal, nodes) {
   if (horizontal) {
-    return range2(nodes[0].column, nodes[nodes.length - 1].column);
-  } else return range2(nodes[0].row, nodes[nodes.length - 1].row);
+    return findOddFromRange(nodes[0].column, nodes[nodes.length - 1].column);
+  } else return findOddFromRange(nodes[0].row, nodes[nodes.length - 1].row);
 }
 function check(nodes) {
-  debugger;
   if (nodes.length < 3) {
     return false;
   }
@@ -85,7 +79,7 @@ const markAsWall = (node, nodes) => {
   return { node: node, type: "wall" };
 };
 
-function range(start, end) {
+function findEvenFromRange(start, end) {
   const rangeArray = Array(end - start + 1)
     .fill()
     .map((_, idx) => start + idx);
@@ -93,7 +87,7 @@ function range(start, end) {
   return filteredArray[Math.floor(Math.random() * filteredArray.length)];
 }
 
-function range2(start, end) {
+function findOddFromRange(start, end) {
   const rangeArray = Array(end - start + 1)
     .fill()
     .map((_, idx) => start + idx);

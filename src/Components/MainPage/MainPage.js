@@ -31,12 +31,25 @@ const wallsAround = (nodes) => {
   for (let row = 0; row < nodes.length; row++) {
     for (let column = 0; column < nodes[0].length; column++) {
       if (row === 0 || row === nodes.length - 1 || column === 0 || column === nodes[0].length - 1) {
-        // nodes[row][column].type = "wall";
         helpingStack.push({ node: nodes[row][column], type: "wall" });
       }
     }
   }
   return helpingStack;
+};
+
+const allWalls = (nodes) => {
+  for (let row = 0; row < nodes.length; row++) {
+    for (let column = 0; column < nodes[0].length; column++) {
+      const currentNode = nodes[row][column];
+      if (!(currentNode.type === "start" || currentNode.type === "end")) {
+        document.getElementById(`node-${currentNode.row}-${currentNode.column}`).className = `${nodeStyles.wall}`;
+        nodes[row][column] = { ...nodes[row][column], type: "wall" };
+      }
+    }
+  }
+
+  return nodes;
 };
 
 const populateNodes = () => {
@@ -62,6 +75,7 @@ const clearWalls = (nodes) => {
       }
     }
   }
+
   return nodes;
 };
 
@@ -160,36 +174,7 @@ const MainPage = () => {
       case "Recursive division":
         setCurrentMazeAlgorithm("Default");
         setCurrentAlgorithm("None");
-        nodes = clearWalls(nodes);
-
-        const stack = recursive(nodes.flat());
-        const stackWithWallsAround = wallsAround(nodes);
-        stackWithWallsAround.push(...stack);
-        stackWithWallsAround.forEach((currNode, indx) => {
-          const { node, type } = currNode;
-          const nodeType = nodes[node.row][node.column].type;
-          if (mazeAnimationSpeed === 0) {
-            if (!(nodeType === "start" || nodeType === "end")) {
-              nodes[node.row][node.column].type = "clear";
-              setIsInBlockedState(false);
-            }
-          } else {
-            setTimeout(() => {
-              if (!(nodeType === "start" || nodeType === "end")) {
-                if (type === "wall") {
-                  document.getElementById(`node-${node.row}-${node.column}`).className = `${nodeStyles.wall}`;
-                  nodes[node.row][node.column].type = "wall";
-                } else {
-                  document.getElementById(`node-${node.row}-${node.column}`).className = `${nodeStyles.visited}`;
-                  nodes[node.row][node.column].type = "visited";
-                }
-              }
-              if (stack.length === indx + 1) {
-                setIsInBlockedState(false);
-              }
-            }, indx * mazeAnimationSpeed);
-          }
-        });
+        generateMaze(currentMazeAlgorithm);
         break;
       default:
     }
@@ -287,24 +272,39 @@ const MainPage = () => {
 
   const generateMaze = (currentMazeAlgorithm) => {
     let stack = [];
+    let type;
     switch (currentMazeAlgorithm) {
       case "Recursive backtracking":
         clearPaths();
         stack = randomDepth(nodes);
+        type = "clear";
         break;
       case "Random maze":
         clearPaths();
         stack = randomMaze(nodes);
+        type = "clear";
         break;
       case "Recursive division":
         clearPaths();
-        stack = recursive(nodes);
+        nodes = clearWalls(nodes);
+        stack = wallsAround(nodes);
+        stack.push(...recursive(nodes.flat()));
+        debugger;
+        // stack = recursive(nodes.flat());
+        type = "wall";
       default:
     }
 
     if (currentAnimationStyle === "Classic") {
-      classicMazeAnimation(stack);
-    } else eduMazeAnimation(stack);
+      classicMazeAnimation(stack, type);
+    } else {
+      if (type === "clear") {
+        nodes = allWalls(nodes);
+        eduMazeAnimation(stack, type);
+      } else if (type === "wall") {
+        eduMazeAnimation(stack, type);
+      }
+    }
   };
 
   const executePathFinding = (time) => {
@@ -345,26 +345,17 @@ const MainPage = () => {
     }
   };
 
-  const eduMazeAnimation = (stack) => {
+  const eduMazeAnimation = (stack, eduMazeAnimationType) => {
     setIsInBlockedState(true);
 
     //Transform all nodes to wall type
-    for (let row = 0; row < nodes.length; row++) {
-      for (let column = 0; column < nodes[0].length; column++) {
-        const currentNode = nodes[row][column];
-        if (!(currentNode.type === "start" || currentNode.type === "end")) {
-          document.getElementById(`node-${currentNode.row}-${currentNode.column}`).className = `${nodeStyles.wall}`;
-          nodes[row][column] = { ...nodes[row][column], type: "wall" };
-        }
-      }
-    }
 
     stack.forEach((currNode, indx) => {
       const { node, type } = currNode;
       const nodeType = nodes[node.row][node.column].type;
       if (mazeAnimationSpeed === 0) {
         if (!(nodeType === "start" || nodeType === "end")) {
-          nodes[node.row][node.column].type = "clear";
+          nodes[node.row][node.column].type = eduMazeAnimationType;
           setIsInBlockedState(false);
         }
       } else {
@@ -373,6 +364,9 @@ const MainPage = () => {
             if (type === "clear") {
               document.getElementById(`node-${node.row}-${node.column}`).className = `${nodeStyles.clear}`;
               nodes[node.row][node.column].type = "clear";
+            } else if (type === "wall") {
+              document.getElementById(`node-${node.row}-${node.column}`).className = `${nodeStyles.wall}`;
+              nodes[node.row][node.column].type = "wall";
             } else {
               document.getElementById(`node-${node.row}-${node.column}`).className = `${nodeStyles.visited}`;
               nodes[node.row][node.column].type = "visited";
@@ -381,22 +375,38 @@ const MainPage = () => {
           if (stack.length === indx + 1) {
             setIsInBlockedState(false);
           }
-        }, 1000 + indx * mazeAnimationSpeed);
+        }, indx * mazeAnimationSpeed);
       }
     });
   };
 
-  const classicMazeAnimation = (stack) => {
+  const classicMazeAnimation = (stack, type) => {
     setIsInBlockedState(true);
     //TODO: FIX THAT SHIT
-    const onlyWalls = nodes.flat().filter((arrNode) => {
-      let x = true;
-      stack.forEach((stackElem) => {
-        const { node } = stackElem;
-        if (node.id === arrNode.id) x = false;
+    let onlyWalls;
+    if (type === "clear") {
+      onlyWalls = nodes.flat().filter((arrNode) => {
+        let x = true;
+        stack.forEach((stackElem) => {
+          const { node } = stackElem;
+          if (node.id === arrNode.id) x = false;
+        });
+        return x;
       });
-      return x;
-    });
+    } else {
+      onlyWalls = nodes.flat().filter((arrNode) => {
+        let x = false;
+        debugger;
+        for (let i = 0; i < stack.length; i++) {
+          const { node } = stack[i];
+          if (node.id === arrNode.id) {
+            x = true;
+            break;
+          }
+        }
+        return x;
+      });
+    }
 
     for (let row = 0; row < nodes.length; row++) {
       for (let column = 0; column < nodes[0].length; column++) {
@@ -416,10 +426,7 @@ const MainPage = () => {
           nodes[currNode.row][currNode.column].type = "wall";
         }
         if (onlyWalls.length === indx + 1) {
-          setTimeout(() => {
-            // setNodes(nooods);
-            setIsInBlockedState(false);
-          }, 500);
+          setIsInBlockedState(false);
         }
       }, indx * mazeAnimationSpeed);
     });

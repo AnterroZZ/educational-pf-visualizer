@@ -29,7 +29,8 @@ const CompareAlgo = ({ isCompareOpen }) => {
     }
   }, [compareAlgoData]);
   const handleClearAlgos = () => {
-    setExecuteAlgo("A* search");
+    setAlgosToCompare([]);
+    currentAlgos = [];
   };
   const handleAddAlgo = (name) => {
     setExecuteAlgo(name);
