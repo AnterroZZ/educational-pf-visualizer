@@ -4,13 +4,14 @@ import nodeStyles from "./Nodes/Node.module.css";
 import { useEffect, useState } from "react";
 import { useControls } from "../Contex/ControlsContext";
 import { useAlgorithm } from "../Contex/AlgorithmsContext";
-import { recursive } from "../../algorithms/mazes/recursive";
+import { randomDepth } from "../../algorithms/mazes/randomDepth";
 import { randomMaze } from "../../algorithms/mazes/random";
 import { dijkstra } from "../../algorithms/pathfinding/dijkstra";
 import { astar } from "../../algorithms/pathfinding/astar";
 import { breadth } from "../../algorithms/pathfinding/breadth";
 import { best } from "../../algorithms/pathfinding/best";
 import { depth } from "../../algorithms/pathfinding/depth";
+import { recursive } from "../../algorithms/mazes/recursive";
 
 // Node types are: clear, wall, start, end, visited
 function singleNode(id, row, column) {
@@ -24,6 +25,19 @@ function singleNode(id, row, column) {
     distance: Infinity,
   };
 }
+
+const wallsAround = (nodes) => {
+  const helpingStack = [];
+  for (let row = 0; row < nodes.length; row++) {
+    for (let column = 0; column < nodes[0].length; column++) {
+      if (row === 0 || row === nodes.length - 1 || column === 0 || column === nodes[0].length - 1) {
+        // nodes[row][column].type = "wall";
+        helpingStack.push({ node: nodes[row][column], type: "wall" });
+      }
+    }
+  }
+  return helpingStack;
+};
 
 const populateNodes = () => {
   let nodes = [];
@@ -81,7 +95,7 @@ const MainPage = () => {
   const [isInDrawingMode, setIsInDrawingMode] = useState(false);
   const [isInBlockedState, setIsInBlockedState] = useState(false);
   const [drawingType, setDrawingType] = useState("");
-  const { clear, setClear } = useControls();
+  const { mainPageCommand, setMainPageCommand, executeAlgo } = useControls();
   const {
     currentMazeAlgorithm,
     setCurrentMazeAlgorithm,
@@ -91,20 +105,44 @@ const MainPage = () => {
     mazeAnimationSpeed,
     setAlgoStats,
     algoAnimationSpeed,
+    setCompareAlgoData,
   } = useAlgorithm();
 
   useEffect(() => {
-    if (clear === "clear") {
+    if (mainPageCommand === "clear") {
       nodes = clearWalls(nodes);
       executePathFinding(0);
-      setClear("none");
-    } else if (clear === "reset") {
+      setMainPageCommand("none");
+    } else if (mainPageCommand === "reset") {
       nodes = populateNodes();
       setAlgoStats({ distance: 0, numberOfVisited: 0, timeTaken: 0 });
       setCurrentAlgorithm("None");
-      setClear("none");
+      setMainPageCommand("none");
+    } else if (mainPageCommand === "") {
     }
-  }, [clear, setAlgoStats, setCurrentAlgorithm]);
+  }, [mainPageCommand, setAlgoStats, setCurrentAlgorithm]);
+
+  useEffect(() => {
+    clearPaths();
+    switch (executeAlgo) {
+      case "Dijkstra's algorithm":
+        setCompareAlgoData(dijkstra(nodes));
+        break;
+      case "A* search":
+        setCompareAlgoData(astar(nodes));
+        break;
+      case "Breadth first search":
+        setCompareAlgoData(breadth(nodes));
+        break;
+      case "Best first search":
+        setCompareAlgoData(best(nodes));
+        break;
+      case "Depth first search":
+        setCompareAlgoData(depth(nodes));
+        break;
+      default:
+    }
+  }, [executeAlgo]);
 
   //Generating maze
   useEffect(() => {
@@ -119,6 +157,40 @@ const MainPage = () => {
         setCurrentAlgorithm("None");
         generateMaze(currentMazeAlgorithm);
         break;
+      case "Recursive division":
+        setCurrentMazeAlgorithm("Default");
+        setCurrentAlgorithm("None");
+        nodes = clearWalls(nodes);
+
+        const stack = recursive(nodes.flat());
+        const stackWithWallsAround = wallsAround(nodes);
+        stackWithWallsAround.push(...stack);
+        stackWithWallsAround.forEach((currNode, indx) => {
+          const { node, type } = currNode;
+          const nodeType = nodes[node.row][node.column].type;
+          if (mazeAnimationSpeed === 0) {
+            if (!(nodeType === "start" || nodeType === "end")) {
+              nodes[node.row][node.column].type = "clear";
+              setIsInBlockedState(false);
+            }
+          } else {
+            setTimeout(() => {
+              if (!(nodeType === "start" || nodeType === "end")) {
+                if (type === "wall") {
+                  document.getElementById(`node-${node.row}-${node.column}`).className = `${nodeStyles.wall}`;
+                  nodes[node.row][node.column].type = "wall";
+                } else {
+                  document.getElementById(`node-${node.row}-${node.column}`).className = `${nodeStyles.visited}`;
+                  nodes[node.row][node.column].type = "visited";
+                }
+              }
+              if (stack.length === indx + 1) {
+                setIsInBlockedState(false);
+              }
+            }, indx * mazeAnimationSpeed);
+          }
+        });
+        break;
       default:
     }
   }, [currentMazeAlgorithm]);
@@ -132,6 +204,7 @@ const MainPage = () => {
     const node = nodes[row][col];
     const newNode = { ...node, type: type, prevType: prevType };
     nodes[row][col] = newNode;
+    setCompareAlgoData("clear");
     document.getElementById(`node-${row}-${col}`).className = type;
   };
 
@@ -147,6 +220,7 @@ const MainPage = () => {
     }
     nodes[row][col] = newUpdatedNode;
     executePathFinding(0);
+    setCompareAlgoData("clear");
   };
 
   const animateAlgo = (stack, time) => {
@@ -216,12 +290,15 @@ const MainPage = () => {
     switch (currentMazeAlgorithm) {
       case "Recursive backtracking":
         clearPaths();
-        stack = recursive(nodes);
+        stack = randomDepth(nodes);
         break;
       case "Random maze":
         clearPaths();
         stack = randomMaze(nodes);
         break;
+      case "Recursive division":
+        clearPaths();
+        stack = recursive(nodes);
       default:
     }
 

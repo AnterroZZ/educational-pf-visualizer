@@ -2,12 +2,26 @@
   position: absolute;
   top: 33%;
   left: -600px;
-  height: 300px;
-  width: auto;
+  height: 340px;
+  width: 600px;
   background-color: rgba(255, 255, 255, 0.8);
   box-shadow: 2px 2px 20px rgba(0, 0, 0, 0.45);
   border-radius: 8px;
   padding: 1rem 1.5rem;
+  gap: 10px;
+  margin: 0;
+  align-items: flex-start;
+  display: flex;
+  flex-direction: column;
+  cursor: auto;
+  transition: 0.3s ease;
+}
+
+.list {
+  overflow: auto;
+  height: max-content;
+  display: flex;
+  padding: 0.5rem 0.5rem;
   gap: 10px;
   align-items: flex-start;
   display: flex;
@@ -28,12 +42,11 @@
   transition: 0.3s ease;
 }
 
-.header {
+.row {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-}
-.algosWrapper {
-  display: grid;
+  width: 500px;
+  justify-items: center;
+  align-items: center;
   grid-template-columns: repeat(5, 1fr);
 }
 
@@ -42,6 +55,8 @@
 }
 
 .buttons {
+  height: min-content;
+  padding: 0rem 0.5rem;
   display: flex;
 }
 

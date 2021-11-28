@@ -19,7 +19,7 @@ const Header = () => {
     currentAlgorithm,
     setAlgoAnimationSpeed,
   } = useAlgorithm();
-  const { setClear, language, setLanguage } = useControls();
+  const { setMainPageCommand, language, setLanguage } = useControls();
   const [mazeAnimationSpeedText, setMazeAnimationSpeedText] = useState("Normal");
   const [algoAnimationSpeedText, setAlgoAnimationSpeedText] = useState("Fast");
 
@@ -102,21 +102,23 @@ const Header = () => {
             <DropdownItem onClick={handleMazeChosen} name={"Random maze"} />
 
             <DropdownItem onClick={handleMazeChosen} name={"Recursive backtracking"} />
+            <DropdownItem onClick={handleMazeChosen} name={"Recursive division"} />
           </DropdownMenu>
         </Picker>
         <h2 className={styles.divider}>/</h2>
         {/* <Controls /> */}
-        <p className={styles.clearButton} onClick={() => setClear("clear")}>
+        <p className={styles.clearButton} onClick={() => setMainPageCommand("clear")}>
           Clear walls
         </p>
         <h3>/</h3>
-        <p className={styles.clearButton} onClick={() => setClear("reset")}>
+        <p className={styles.clearButton} onClick={() => setMainPageCommand("reset")}>
           Reset board
         </p>
         <h2 className={styles.divider}>/</h2>
         <p className={styles.currentAlgo}>Current algorithm: {currentAlgorithm}</p>
       </div>
       <img
+        alt="language"
         onClick={handleLanguageChange}
         src={language === "english" ? enFlag : plFlag}
         className={styles.english}

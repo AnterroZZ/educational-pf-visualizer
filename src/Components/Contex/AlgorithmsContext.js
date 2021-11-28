@@ -9,6 +9,7 @@ export const AlgorithmsContext = (props) => {
   const [mazeAnimationSpeed, setMazeAnimationSpeed] = useState(5);
   const [algoAnimationSpeed, setAlgoAnimationSpeed] = useState(2);
   const [algoStats, setAlgoStats] = useState({ distance: 0, numberOfVisited: 0, timeTaken: 0 });
+  const [compareAlgoData, setCompareAlgoData] = useState();
   return (
     <AlgorithmsCont.Provider
       value={{
@@ -24,6 +25,8 @@ export const AlgorithmsContext = (props) => {
         setAlgoAnimationSpeed,
         setAlgoStats,
         algoStats,
+        compareAlgoData,
+        setCompareAlgoData,
       }}
     >
       {props.children}
