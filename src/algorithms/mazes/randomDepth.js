@@ -20,9 +20,12 @@ export function randomDepth(nodes) {
 
   while (algoStack.length > 0) {
     let currentNode = algoStack.pop();
-    const unvisited = currentNode.neighbours.filter(
-      (neighbour) => algoNodes[neighbour.row][neighbour.column].type !== "visited"
-    );
+    const unvisited = [];
+    for (let i = 0; i < currentNode.neighbours.length; i++) {
+      if (algoNodes[currentNode.neighbours[i].row][currentNode.neighbours[i].column].type !== "visited") {
+        unvisited.push(currentNode.neighbours[i]);
+      }
+    }
 
     if (unvisited.length > 0) {
       const neighbour = randomOne(unvisited);

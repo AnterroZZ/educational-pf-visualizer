@@ -1,10 +1,3 @@
-function Neighbour(row, column) {
-  return {
-    row: row,
-    column: column,
-  };
-}
-
 export const recursive = (nodes) => {
   const copyOfNodes = JSON.parse(JSON.stringify(nodes));
   const nodesOrder = [];

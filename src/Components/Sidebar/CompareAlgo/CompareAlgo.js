@@ -6,7 +6,6 @@ import { useAlgorithm } from "../../Contex/AlgorithmsContext";
 import DropdownMenu from "../../Header/HeaderComponents/DropdownMenu/DropdownMenu";
 import Picker from "../../Header/HeaderComponents/Picker/Picker";
 import DropdownItem from "../../Header/HeaderComponents/DropdownItem/DropdownItem";
-let currentAlgos = [];
 const pathfindingAlgosList = [
   "A* search",
   "Dijkstra's algorithm",
@@ -17,33 +16,28 @@ const pathfindingAlgosList = [
 
 const CompareAlgo = ({ isCompareOpen }) => {
   const [algosToCompare, setAlgosToCompare] = useState([]);
-  const { executeAlgo, setExecuteAlgo } = useControls();
+  const { setExecuteAlgo } = useControls();
   const { compareAlgoData, setCurrentAlgorithm } = useAlgorithm();
   useEffect(() => {
     if (compareAlgoData === "clear") {
       setAlgosToCompare([]);
-      currentAlgos = [];
+      setExecuteAlgo("None");
     } else if (compareAlgoData) {
-      currentAlgos.push({ name: executeAlgo, data: compareAlgoData });
-      setAlgosToCompare(currentAlgos);
+      setAlgosToCompare((prev) => [...prev, { name: compareAlgoData.name, data: compareAlgoData.data }]);
     }
-  }, [compareAlgoData]);
+  }, [compareAlgoData, setExecuteAlgo]);
   const handleClearAlgos = () => {
     setAlgosToCompare([]);
-    currentAlgos = [];
   };
   const handleAddAlgo = (name) => {
     setExecuteAlgo(name);
   };
 
-  const findData = (name) => {
-    return algosToCompare.filter((item) => item.name === name)[0].data;
-  };
   const handleShowAlgo = (name) => {
     setCurrentAlgorithm(name);
   };
 
-  const filterAvailableAlgos = (name) => {
+  const isAlgorithmAvailable = (name) => {
     for (let i = 0; i < algosToCompare.length; i++) {
       if (algosToCompare[i].name === name) {
         return false;
@@ -81,11 +75,12 @@ const CompareAlgo = ({ isCompareOpen }) => {
         <Picker name={"Add algo"}>
           <DropdownMenu>
             {pathfindingAlgosList
-              .filter((item) => {
-                return filterAvailableAlgos(item);
+              .filter((algorithm) => {
+                return isAlgorithmAvailable(algorithm);
               })
-              .map((item) => {
-                return <DropdownItem onClick={handleAddAlgo} name={item} />;
+              .map((item, index, arr) => {
+                //TODO: key fix
+                return <DropdownItem key={arr[index]} onClick={handleAddAlgo} name={item} />;
               })}
           </DropdownMenu>
         </Picker>

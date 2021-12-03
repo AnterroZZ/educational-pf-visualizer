@@ -6,7 +6,7 @@ const DropdownItem = (props) => {
   };
 
   return (
-    <li key={props.name} onClick={handleItemChosen} className={styles.item}>
+    <li key={Math.random()} onClick={handleItemChosen} className={styles.item}>
       {props.name}
     </li>
   );

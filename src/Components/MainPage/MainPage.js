@@ -134,29 +134,30 @@ const MainPage = () => {
       setMainPageCommand("none");
     } else if (mainPageCommand === "") {
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mainPageCommand, setAlgoStats, setCurrentAlgorithm]);
 
   useEffect(() => {
     clearPaths();
     switch (executeAlgo) {
       case "Dijkstra's algorithm":
-        setCompareAlgoData(dijkstra(nodes));
+        setCompareAlgoData({ name: executeAlgo, data: dijkstra(nodes) });
         break;
       case "A* search":
-        setCompareAlgoData(astar(nodes));
+        setCompareAlgoData({ name: executeAlgo, data: astar(nodes) });
         break;
       case "Breadth first search":
-        setCompareAlgoData(breadth(nodes));
+        setCompareAlgoData({ name: executeAlgo, data: breadth(nodes) });
         break;
       case "Best first search":
-        setCompareAlgoData(best(nodes));
+        setCompareAlgoData({ name: executeAlgo, data: best(nodes) });
         break;
       case "Depth first search":
-        setCompareAlgoData(depth(nodes));
+        setCompareAlgoData({ name: executeAlgo, data: depth(nodes) });
         break;
       default:
     }
-  }, [executeAlgo]);
+  }, [executeAlgo, setCompareAlgoData]);
 
   //Generating maze
   useEffect(() => {
@@ -178,11 +179,13 @@ const MainPage = () => {
         break;
       default:
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentMazeAlgorithm]);
 
   //Executing pathfinding algorithms
   useEffect(() => {
     executePathFinding(algoAnimationSpeed);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentAlgorithm]);
 
   const updateNodes = (col, row, type, prevType = type) => {
@@ -289,9 +292,8 @@ const MainPage = () => {
         nodes = clearWalls(nodes);
         stack = wallsAround(nodes);
         stack.push(...recursive(nodes.flat()));
-        debugger;
-        // stack = recursive(nodes.flat());
         type = "wall";
+        break;
       default:
     }
 
