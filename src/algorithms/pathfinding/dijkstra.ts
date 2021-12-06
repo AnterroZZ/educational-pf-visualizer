@@ -12,7 +12,7 @@ export function dijkstra(nodes: Node[][]) {
 
   if (!startingNode || !endingNode) {
     return {
-      nodesOrder: 0,
+      nodesOrder: undefined,
       pathOrder: undefined,
       statistics: {
         distance: 0,

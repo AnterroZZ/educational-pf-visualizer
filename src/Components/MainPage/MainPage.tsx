@@ -12,21 +12,40 @@ import { breadth } from "../../algorithms/pathfinding/breadth";
 import { best } from "../../algorithms/pathfinding/best";
 import { depth } from "../../algorithms/pathfinding/depth";
 import { recursive } from "../../algorithms/mazes/recursive";
+import { Node as NodeInterface } from "../../algorithms/pathfinding/pathfindingUtils";
+import { WrapperNode } from "../../algorithms/mazes/randomDepth";
 
 // Node types are: clear, wall, start, end, visited
-function singleNode(id, row, column) {
-  return {
-    id: id,
-    row: row,
-    column: column,
-    type: "clear",
-    prevType: "clear",
-    neighbours: [],
-    distance: Infinity,
+interface algorithmStack {
+  nodesOrder: NodeInterface[] | undefined;
+  pathOrder: NodeInterface[] | undefined;
+  statistics: {
+    distance: number;
+    numberOfVisited: number;
+    timeTaken: number;
   };
 }
 
-const wallsAround = (nodes) => {
+export class SingleNode implements NodeInterface {
+  id: number;
+  row: number;
+  column: number;
+  type: string;
+  prevType: string;
+  neighbours: NodeInterface[];
+  distance: number;
+  constructor(id: number, row: number, column: number) {
+    this.id = id;
+    this.row = row;
+    this.column = column;
+    this.type = "clear";
+    this.prevType = "clear";
+    this.neighbours = [];
+    this.distance = Infinity;
+  }
+}
+
+const wallsAround = (nodes: SingleNode[][]) => {
   const helpingStack = [];
   for (let row = 0; row < nodes.length; row++) {
     for (let column = 0; column < nodes[0].length; column++) {
@@ -38,12 +57,12 @@ const wallsAround = (nodes) => {
   return helpingStack;
 };
 
-const allWalls = (nodes) => {
+const allWalls = (nodes: SingleNode[][]) => {
   for (let row = 0; row < nodes.length; row++) {
     for (let column = 0; column < nodes[0].length; column++) {
       const currentNode = nodes[row][column];
       if (!(currentNode.type === "start" || currentNode.type === "end")) {
-        document.getElementById(`node-${currentNode.row}-${currentNode.column}`).className = `${nodeStyles.wall}`;
+        document.getElementById(`node-${currentNode.row}-${currentNode.column}`)!.className = `${nodeStyles.wall}`;
         nodes[row][column] = { ...nodes[row][column], type: "wall" };
       }
     }
@@ -53,11 +72,11 @@ const allWalls = (nodes) => {
 };
 
 const populateNodes = () => {
-  let nodes = [];
+  let nodes: SingleNode[][] = [];
   for (let row = 0; row < 21; row++) {
-    let currentRow = [];
+    let currentRow: SingleNode[] = [];
     for (let column = 0; column < 51; column++) {
-      const node = singleNode(row * 51 + column, row, column);
+      const node: SingleNode = new SingleNode(row * 51 + column, row, column);
       if (column === 11 && row === 11) node.type = "start";
       if (column === 39 && row === 11) node.type = "end";
       currentRow.push(node);
@@ -67,7 +86,7 @@ const populateNodes = () => {
   return nodes;
 };
 
-const clearWalls = (nodes) => {
+const clearWalls = (nodes: SingleNode[][]) => {
   for (let row = 0; row < nodes.length; row++) {
     for (let column = 0; column < nodes[0].length; column++) {
       if (nodes[row][column].type === "wall") {
@@ -79,12 +98,12 @@ const clearWalls = (nodes) => {
   return nodes;
 };
 
-let nodes = populateNodes();
+let nodes: SingleNode[][] = populateNodes();
 
 const clearPaths = () => {
   for (let row = 0; row < nodes.length; row++) {
     for (let column = 0; column < nodes[0].length; column++) {
-      const currentNode = nodes[row][column];
+      const currentNode: SingleNode = nodes[row][column];
       if (currentNode.type === "visited" || currentNode.type === "path") {
         nodes[row][column] = {
           ...currentNode,
@@ -188,20 +207,20 @@ const MainPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentAlgorithm]);
 
-  const updateNodes = (col, row, type, prevType = type) => {
-    const node = nodes[row][col];
-    const newNode = { ...node, type: type, prevType: prevType };
+  const updateNodes = (col: number, row: number, type: string, prevType = type) => {
+    const node: SingleNode = nodes[row][col];
+    const newNode: SingleNode = { ...node, type: type, prevType: prevType };
     nodes[row][col] = newNode;
     setCompareAlgoData("clear");
-    document.getElementById(`node-${row}-${col}`).className = type;
+    document.getElementById(`node-${row}-${col}`)!.className = type;
   };
 
-  const moveStartEnd = (row, col, prevRow, prevCol, type) => {
-    const newNode = nodes[row][col];
-    const prevNode = nodes[prevRow][prevCol];
+  const moveStartEnd = (row: number, col: number, prevRow: number, prevCol: number, type: string) => {
+    const newNode: SingleNode = nodes[row][col];
+    const prevNode: SingleNode = nodes[prevRow][prevCol];
     const newUpdatedNode = { ...newNode, type: type, prevType: newNode.type };
     if (prevNode.type === "start" || prevNode.type === "end") {
-      const prevUpdatedNode = { ...prevNode, type: prevNode.prevType, prevType: "clear" };
+      const prevUpdatedNode: SingleNode = { ...prevNode, type: prevNode.prevType, prevType: "clear" };
       nodes[prevRow][prevCol] = prevUpdatedNode;
     } else {
       nodes[prevRow][prevCol] = { ...prevNode, type: prevNode.prevType };
@@ -211,30 +230,15 @@ const MainPage = () => {
     setCompareAlgoData("clear");
   };
 
-  const animateAlgo = (stack, time) => {
+  const animateAlgo = (stack: algorithmStack, time: number) => {
     setIsInBlockedState(true);
     const { nodesOrder, pathOrder } = stack;
 
     //Used to move around end and start node
-    if (time === 0) {
-      nodesOrder.forEach((currNode, indx) => {
-        document.getElementById(`node-${currNode.row}-${currNode.column}`).className = `${nodeStyles.visited}`;
-
-        nodes[currNode.row][currNode.column] = {
-          ...currNode,
-          type: "visited",
-        };
-        if (nodesOrder.length === indx + 1) {
-          // setNodes(newNodes);
-          if (pathOrder.length === 0) {
-            setIsInBlockedState(false);
-          } else animatePath(pathOrder, time);
-        }
-      });
-    } else
-      nodesOrder.forEach((currNode, indx) => {
-        setTimeout(() => {
-          document.getElementById(`node-${currNode.row}-${currNode.column}`).className = `${nodeStyles.visited}`;
+    if (nodesOrder !== undefined) {
+      if (time === 0) {
+        nodesOrder.forEach((currNode: SingleNode, indx: number) => {
+          document.getElementById(`node-${currNode.row}-${currNode.column}`)!.className = `${nodeStyles.visited}`;
 
           nodes[currNode.row][currNode.column] = {
             ...currNode,
@@ -242,18 +246,39 @@ const MainPage = () => {
           };
           if (nodesOrder.length === indx + 1) {
             // setNodes(newNodes);
-            if (pathOrder.length === 0) {
-              setIsInBlockedState(false);
-            } else animatePath(pathOrder, nodes, time);
+            if (pathOrder !== undefined) {
+              if (pathOrder.length === 0) {
+                setIsInBlockedState(false);
+              } else animatePath(pathOrder, time);
+            }
           }
-        }, time * indx);
-      });
+        });
+      } else
+        nodesOrder.forEach((currNode, indx) => {
+          setTimeout(() => {
+            document.getElementById(`node-${currNode.row}-${currNode.column}`)!.className = `${nodeStyles.visited}`;
+
+            nodes[currNode.row][currNode.column] = {
+              ...currNode,
+              type: "visited",
+            };
+            if (nodesOrder.length === indx + 1) {
+              // setNodes(newNodes);
+              if (pathOrder !== undefined) {
+                if (pathOrder.length === 0) {
+                  setIsInBlockedState(false);
+                } else animatePath(pathOrder, time);
+              }
+            }
+          }, time * indx);
+        });
+    }
   };
 
-  const animatePath = (stack, time) => {
+  const animatePath = (stack: NodeInterface[], time: number) => {
     if (time === 0) {
       stack.forEach((currNode, indx) => {
-        document.getElementById(`node-${currNode.row}-${currNode.column}`).className = `${nodeStyles.path}`;
+        document.getElementById(`node-${currNode.row}-${currNode.column}`)!.className = `${nodeStyles.path}`;
         nodes[currNode.row][currNode.column].type = "path";
         if (stack.length === indx + 1) {
           // setNodes(nooods);
@@ -263,7 +288,7 @@ const MainPage = () => {
     } else
       stack.forEach((currNode, indx) => {
         setTimeout(() => {
-          document.getElementById(`node-${currNode.row}-${currNode.column}`).className = `${nodeStyles.path}`;
+          document.getElementById(`node-${currNode.row}-${currNode.column}`)!.className = `${nodeStyles.path}`;
           nodes[currNode.row][currNode.column].type = "path";
           if (stack.length === indx + 1) {
             // setNodes(nooods);
@@ -273,9 +298,9 @@ const MainPage = () => {
       });
   };
 
-  const generateMaze = (currentMazeAlgorithm) => {
-    let stack = [];
-    let type;
+  const generateMaze = (currentMazeAlgorithm: string) => {
+    let stack: WrapperNode[] = [];
+    let type: string = "clear";
     switch (currentMazeAlgorithm) {
       case "Recursive backtracking":
         clearPaths();
@@ -309,8 +334,8 @@ const MainPage = () => {
     }
   };
 
-  const executePathFinding = (time) => {
-    let currentAlgoNodes;
+  const executePathFinding = (time: number) => {
+    let currentAlgoNodes: algorithmStack | undefined = undefined;
     switch (currentAlgorithm) {
       case "Dijkstra's algorithm":
         clearPaths();
@@ -340,14 +365,14 @@ const MainPage = () => {
       default:
     }
 
-    if (currentAlgoNodes) {
-      if (currentAlgoNodes.nodesOrder !== 0) {
+    if (currentAlgoNodes !== undefined) {
+      if (currentAlgoNodes.nodesOrder !== undefined) {
         animateAlgo(currentAlgoNodes, time);
       }
     }
   };
 
-  const eduMazeAnimation = (stack, eduMazeAnimationType) => {
+  const eduMazeAnimation = (stack: WrapperNode[], eduMazeAnimationType: string) => {
     setIsInBlockedState(true);
 
     //Transform all nodes to wall type
@@ -364,13 +389,13 @@ const MainPage = () => {
         setTimeout(() => {
           if (!(nodeType === "start" || nodeType === "end")) {
             if (type === "clear") {
-              document.getElementById(`node-${node.row}-${node.column}`).className = `${nodeStyles.clear}`;
+              document.getElementById(`node-${node.row}-${node.column}`)!.className = `${nodeStyles.clear}`;
               nodes[node.row][node.column].type = "clear";
             } else if (type === "wall") {
-              document.getElementById(`node-${node.row}-${node.column}`).className = `${nodeStyles.wall}`;
+              document.getElementById(`node-${node.row}-${node.column}`)!.className = `${nodeStyles.wall}`;
               nodes[node.row][node.column].type = "wall";
             } else {
-              document.getElementById(`node-${node.row}-${node.column}`).className = `${nodeStyles.visited}`;
+              document.getElementById(`node-${node.row}-${node.column}`)!.className = `${nodeStyles.visited}`;
               nodes[node.row][node.column].type = "visited";
             }
           }
@@ -382,7 +407,7 @@ const MainPage = () => {
     });
   };
 
-  const classicMazeAnimation = (stack, type) => {
+  const classicMazeAnimation = (stack: WrapperNode[], type: string) => {
     setIsInBlockedState(true);
     //TODO: FIX THAT SHIT
     let onlyWalls;
@@ -414,7 +439,7 @@ const MainPage = () => {
       for (let column = 0; column < nodes[0].length; column++) {
         const currentNode = nodes[row][column];
         if (!(currentNode.type === "start" || currentNode.type === "end")) {
-          document.getElementById(`node-${currentNode.row}-${currentNode.column}`).className = `${nodeStyles.clear}`;
+          document.getElementById(`node-${currentNode.row}-${currentNode.column}`)!.className = `${nodeStyles.clear}`;
           nodes[row][column] = { ...nodes[row][column], type: "clear" };
         }
       }
@@ -423,7 +448,7 @@ const MainPage = () => {
     onlyWalls.forEach((currNode, indx) => {
       setTimeout(() => {
         if (!(currNode.type === "start" || currNode.type === "end")) {
-          document.getElementById(`node-${currNode.row}-${currNode.column}`).className = `${nodeStyles.wall}`;
+          document.getElementById(`node-${currNode.row}-${currNode.column}`)!.className = `${nodeStyles.wall}`;
 
           nodes[currNode.row][currNode.column].type = "wall";
         }
@@ -453,7 +478,6 @@ const MainPage = () => {
                   drawingType={drawingType}
                   setDrawingType={setDrawingType}
                   node={node}
-                  nodes={nodes}
                   setPreviousNode={setPreviousNode}
                   previousNode={previousNode}
                   isInBlockedState={isInBlockedState}

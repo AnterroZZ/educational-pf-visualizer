@@ -1,6 +1,29 @@
+import { SingleNode } from "../MainPage";
 import styles from "./Node.module.css";
 
-const Node = ({
+interface Props {
+  node: SingleNode;
+  isInDrawingMode: boolean;
+  setIsInDrawingMode: React.Dispatch<React.SetStateAction<boolean>>;
+  setDrawingType: React.Dispatch<React.SetStateAction<string>>;
+  drawingType: string;
+  row: number;
+  column: number;
+  onMoveStartEnd: (row: number, col: number, prevRow: number, prevCol: number, type: string) => void;
+  updateNodes: (col: number, row: number, type: string, prevType?: string) => void;
+  isInBlockedState: boolean;
+  setPreviousNode: React.Dispatch<
+    React.SetStateAction<{
+      row: number;
+      column: number;
+    }>
+  >;
+  previousNode: {
+    row: number;
+    column: number;
+  };
+}
+const Node: React.FC<Props> = ({
   node,
   isInDrawingMode,
   setIsInDrawingMode,
@@ -43,7 +66,7 @@ const Node = ({
     }
   };
 
-  const handleStartDrawing = (event) => {
+  const handleStartDrawing = (event: any) => {
     event.preventDefault();
     console.log(node);
     setIsInDrawingMode(true);

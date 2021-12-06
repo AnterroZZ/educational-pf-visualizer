@@ -7,7 +7,7 @@ export function depth(nodes: Node[][]) {
 
   if (startingNode === undefined || endingNode === undefined) {
     return {
-      nodesOrder: 0,
+      nodesOrder: undefined,
       pathOrder: undefined,
       statistics: {
         distance: 0,

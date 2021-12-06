@@ -26,7 +26,7 @@ export function astar(nodes: Node[][]) {
   //No start or end node
   if (startNode === undefined || endingNode === undefined) {
     return {
-      nodesOrder: 0,
+      nodesOrder: undefined,
       pathOrder: undefined,
       statistics: {
         distance: 0,

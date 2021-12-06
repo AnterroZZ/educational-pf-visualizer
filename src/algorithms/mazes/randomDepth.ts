@@ -8,7 +8,7 @@ interface Node {
   distance: number;
 }
 
-interface WrapperNode {
+export interface WrapperNode {
   node: Node;
   type: string;
 }
