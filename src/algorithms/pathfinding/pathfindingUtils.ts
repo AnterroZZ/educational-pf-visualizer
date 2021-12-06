@@ -1,4 +1,17 @@
-export const find = (nodeType, allNodes) => {
+export interface Node {
+  id: number;
+  row: number;
+  column: number;
+  type: string;
+  prevType: string;
+  neighbours: Node[];
+  distance: number;
+  g?: number;
+  h?: number;
+  previous?: Node;
+}
+
+export const find = (nodeType: string, allNodes: Node[][]) => {
   for (let row = 0; row < allNodes.length; row++) {
     for (let column = 0; column < allNodes[0].length; column++) {
       if (allNodes[row][column].type === nodeType) {
@@ -9,8 +22,8 @@ export const find = (nodeType, allNodes) => {
   // console.log(`Couldn't find the ${nodeType.toUpper()} node`);
 };
 
-export const findNeighbours = (node, allNodes) => {
-  const neighbours = [];
+export const findNeighbours = (node: Node, allNodes: Node[][]) => {
+  const neighbours: Node[] = [];
   if (node.row + 1 < allNodes.length) {
     neighbours.push(allNodes[node.row + 1][node.column]);
   }
@@ -29,13 +42,17 @@ export const findNeighbours = (node, allNodes) => {
   );
 };
 
-export const findNodesOrderToStart = (finalNode) => {
-  const nodesOrder = [];
-  let currentNode = finalNode;
+export const findNodesOrderToStart = (finalNode: Node) => {
+  const nodesOrder: Node[] = [];
+  let currentNode: Node = finalNode;
   while (currentNode.type !== "start") {
+    if (currentNode.previous === undefined) {
+      break;
+    }
     nodesOrder.push(currentNode);
     currentNode = currentNode.previous;
   }
-
-  return nodesOrder.reverse();
+  if (nodesOrder.length === 0) {
+    return undefined;
+  } else return nodesOrder.reverse();
 };

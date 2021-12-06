@@ -1,19 +1,19 @@
-import { find, findNeighbours, findNodesOrderToStart } from "./pathfindingUtils";
+import { Node, find, findNeighbours, findNodesOrderToStart } from "./pathfindingUtils";
 
-export function dijkstra(nodes) {
-  const algoNodes = JSON.parse(JSON.stringify(nodes));
-  const startingNode = find("start", algoNodes);
-  const endingNode = find("end", algoNodes);
-  const priorityQueue = [];
-  const nodesOrder = [];
-  let pathOrder = [];
-  let endNodeDistance = 0;
-  const startTime = performance.now();
+export function dijkstra(nodes: Node[][]) {
+  const algoNodes: Node[][] = JSON.parse(JSON.stringify(nodes));
+  const startingNode: Node | undefined = find("start", algoNodes);
+  const endingNode: Node | undefined = find("end", algoNodes);
+  const priorityQueue: Node[] = [];
+  const nodesOrder: Node[] = [];
+  let pathOrder: Node[] | undefined = [];
+  let endNodeDistance: number = 0;
+  const startTime: number = performance.now();
 
   if (!startingNode || !endingNode) {
     return {
       nodesOrder: 0,
-      pathOrder: 0,
+      pathOrder: undefined,
       statistics: {
         distance: 0,
         numberOfVisited: 0,
@@ -35,23 +35,27 @@ export function dijkstra(nodes) {
         return a.distance - b.distance;
       });
     }
-    const currentNode = priorityQueue.shift();
-
-    if (currentNode.type === "end") {
+    const currentNode: Node | undefined = priorityQueue.shift();
+    if (currentNode === undefined) {
+      break;
+    }
+    if (currentNode.type === "end" && currentNode.previous) {
       pathOrder = findNodesOrderToStart(currentNode.previous);
-      endNodeDistance = pathOrder.length;
+      if (pathOrder !== undefined) {
+        endNodeDistance = pathOrder.length;
+      }
       break;
     }
 
-    const neighbours = findNeighbours(currentNode, algoNodes);
+    const neighbours: Node[] = findNeighbours(currentNode, algoNodes);
     if (neighbours.length !== 0) {
       for (let i = 0; i < neighbours.length; i++) {
-        const distance = currentNode.distance + 1;
+        const distance: number = currentNode.distance + 1;
         if (
           distance < algoNodes[neighbours[i].row][neighbours[i].column].distance ||
           algoNodes[neighbours[i].row][neighbours[i].column].distance === null
         ) {
-          const updatedNeighbour = {
+          const updatedNeighbour: Node = {
             ...neighbours[i],
             distance: currentNode.distance + 1,
             previous: currentNode,
@@ -72,8 +76,8 @@ export function dijkstra(nodes) {
       };
     }
   }
-  const endTime = performance.now();
-  const timeTaken = endTime - startTime;
+  const endTime: number = performance.now();
+  const timeTaken: number = endTime - startTime;
   return {
     nodesOrder,
     pathOrder,

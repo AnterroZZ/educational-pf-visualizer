@@ -1,6 +1,10 @@
 import styles from "./DropdownItem.module.css";
 
-const DropdownItem = (props) => {
+interface Props {
+  onClick: (name: string) => void;
+  name: string;
+}
+const DropdownItem: React.FC<Props> = (props) => {
   const handleItemChosen = () => {
     props.onClick(props.name);
   };

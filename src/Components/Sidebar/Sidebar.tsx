@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useAlgorithm } from "../Contex/AlgorithmsContext";
-import CompareAlgo from "./CompareAlgo/CompareAlgo";
+import CompareAlgo from "../SideComponents/CompareAlgo/CompareAlgo";
 import styles from "./Sidebar.module.css";
-import Statistics from "./Statistics/Statistics";
+import Statistics from "../SideComponents/Statistics/Statistics";
 
 const Sidebar = () => {
   const [isStatOpen, setIsStatOpen] = useState(false);

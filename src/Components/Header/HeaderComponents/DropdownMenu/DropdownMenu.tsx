@@ -1,6 +1,9 @@
 import styles from "./DropdownMenu.module.css";
 
-const DropdownMenu = (props) => {
+interface Props {
+  children: any;
+}
+const DropdownMenu: React.FC<Props> = (props) => {
   return <ul className={styles.dropdown}>{props.children}</ul>;
 };
 

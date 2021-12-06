@@ -30,21 +30,21 @@ const Header = () => {
     "Breadth first search",
     "Best first search",
   ];
-  const handleAlgoritmsChosen = (name) => {
+  const handleAlgoritmsChosen = (name: string) => {
     setCurrentAlgorithm(name);
     console.log(`Current algorithm set to: ${name}`);
   };
 
-  const handleMazeChosen = (name) => {
+  const handleMazeChosen = (name: string) => {
     setCurrentMazeAlgorithm(name);
   };
 
-  const handleOnAnimationChange = (event) => {
+  const handleOnAnimationChange = (event: any) => {
     currentAnimationStyle === "Classic" ? setCurrentAnimationStyle("Educational") : setCurrentAnimationStyle("Classic");
     event.stopPropagation();
   };
 
-  const handleChangeOfMazeAnimationSpeed = (event) => {
+  const handleChangeOfMazeAnimationSpeed = (event: any) => {
     if (mazeAnimationSpeedText === "Normal") {
       setMazeAnimationSpeed(4);
       setMazeAnimationSpeedText("Fast");
@@ -58,7 +58,7 @@ const Header = () => {
     event.stopPropagation();
   };
 
-  const handleChangeOfAlgoAnimationSpeed = (event) => {
+  const handleChangeOfAlgoAnimationSpeed = (event: any) => {
     if (algoAnimationSpeedText === "Normal") {
       setAlgoAnimationSpeed(2);
       setAlgoAnimationSpeedText("Fast");

@@ -14,8 +14,16 @@ const pathfindingAlgosList = [
   "Best first search",
 ];
 
-const CompareAlgo = ({ isCompareOpen }) => {
-  const [algosToCompare, setAlgosToCompare] = useState([]);
+interface Props {
+  isCompareOpen: boolean;
+}
+interface Algorithm {
+  name: string;
+  data: any;
+}
+
+const CompareAlgo: React.FC<Props> = ({ isCompareOpen }) => {
+  const [algosToCompare, setAlgosToCompare] = useState<Array<Algorithm>>([]);
   const { setExecuteAlgo } = useControls();
   const { compareAlgoData, setCurrentAlgorithm } = useAlgorithm();
   useEffect(() => {
@@ -29,15 +37,15 @@ const CompareAlgo = ({ isCompareOpen }) => {
   const handleClearAlgos = () => {
     setAlgosToCompare([]);
   };
-  const handleAddAlgo = (name) => {
+  const handleAddAlgo = (name: string) => {
     setExecuteAlgo(name);
   };
 
-  const handleShowAlgo = (name) => {
+  const handleShowAlgo = (name: string) => {
     setCurrentAlgorithm(name);
   };
 
-  const isAlgorithmAvailable = (name) => {
+  const isAlgorithmAvailable = (name: string) => {
     for (let i = 0; i < algosToCompare.length; i++) {
       if (algosToCompare[i].name === name) {
         return false;
@@ -84,13 +92,13 @@ const CompareAlgo = ({ isCompareOpen }) => {
               })}
           </DropdownMenu>
         </Picker>
-        <Button onClick={handleClearAlgos} styles={{ Background: "red" }} text={"X"} />
+        <Button onClick={handleClearAlgos} text={"X"} />
       </footer>
     </div>
   );
 };
 
-function round(num) {
+function round(num: number) {
   let m = Number((Math.abs(num) * 100).toPrecision(15));
   return (Math.round(m) / 100) * Math.sign(num);
 }

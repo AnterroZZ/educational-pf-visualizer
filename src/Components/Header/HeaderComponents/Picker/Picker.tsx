@@ -1,11 +1,15 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styles from "./Picker.module.css";
 
-const Picker = (props) => {
+interface Props {
+  name: string;
+  children: any;
+}
+const Picker: React.FC<Props> = (props) => {
   const [open, setOpen] = useState(false);
-  const currentRef = useRef(null);
+  const currentRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    function handleClickOutside(event) {
+    function handleClickOutside(event: any) {
       if (currentRef.current && !currentRef.current.contains(event.target)) {
         setOpen(false);
       }

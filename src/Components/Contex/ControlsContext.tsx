@@ -1,8 +1,8 @@
 import { createContext, useContext, useState } from "react";
 
-export const Controlls = createContext();
+export const Controlls = createContext({} as any);
 
-export const ControlsContext = (props) => {
+export const ControlsContext: React.FC<any> = (props) => {
   const [mainPageCommand, setMainPageCommand] = useState("none");
   const [language, setLanguage] = useState("english");
   const [executeAlgo, setExecuteAlgo] = useState(false);

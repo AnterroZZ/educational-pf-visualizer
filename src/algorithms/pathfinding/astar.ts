@@ -1,18 +1,33 @@
 import { find, findNeighbours, findNodesOrderToStart } from "./pathfindingUtils";
 
-export function best(nodes) {
-  const algoNodes = JSON.parse(JSON.stringify(nodes));
-  let startingNode = find("start", algoNodes);
-  const endingNode = find("end", algoNodes);
-  const priorityQueue = [];
-  const nodesOrder = [];
-  let pathOrder = [];
-  let endNodeDistance = 0;
+export interface Node {
+  id: number;
+  row: number;
+  column: number;
+  type: string;
+  prevType: string;
+  neighbours: Node[];
+  distance: number;
+  g?: number;
+  h?: number;
+  previous?: Node;
+}
 
-  if (!startingNode || !endingNode) {
+export function astar(nodes: Node[][]) {
+  const algoNodes: Node[][] = JSON.parse(JSON.stringify(nodes));
+  const startNode: Node | undefined = find("start", algoNodes);
+  const endingNode: Node | undefined = find("end", algoNodes);
+  const priorityQueue: Node[] = [];
+  const nodesOrder: Node[] = [];
+  let pathOrder: Node[] | undefined = [];
+  let endNodeDistance = 0;
+  const startTime: number = performance.now();
+
+  //No start or end node
+  if (startNode === undefined || endingNode === undefined) {
     return {
       nodesOrder: 0,
-      pathOrder: 0,
+      pathOrder: undefined,
       statistics: {
         distance: 0,
         numberOfVisited: 0,
@@ -20,16 +35,15 @@ export function best(nodes) {
       },
     };
   }
-  const startTime = performance.now();
 
-  algoNodes[startingNode.row][startingNode.column] = {
-    ...startingNode,
+  algoNodes[startNode.row][startNode.column] = {
+    ...startNode,
     distance: 0,
     g: 0,
     h: 0,
   };
 
-  startingNode = algoNodes[startingNode.row][startingNode.column];
+  const startingNode: Node = algoNodes[startNode.row][startNode.column];
   priorityQueue.push(startingNode);
 
   while (priorityQueue.length > 0) {
@@ -37,31 +51,43 @@ export function best(nodes) {
       priorityQueue.sort((a, b) => {
         return b.distance - a.distance;
       });
-    const currentNode = priorityQueue.pop();
-
-    if (currentNode.type === "end") {
-      pathOrder = findNodesOrderToStart(currentNode.previous);
-      endNodeDistance = pathOrder.length;
+    const currentNode: Node | undefined = priorityQueue.pop();
+    if (currentNode === undefined) {
       break;
     }
 
-    const neighbours = findNeighbours(currentNode, algoNodes);
-    if (neighbours.length !== 0) {
+    if (currentNode.type === "end" && currentNode.previous) {
+      pathOrder = findNodesOrderToStart(currentNode.previous);
+      if (pathOrder !== undefined) {
+        endNodeDistance = pathOrder.length;
+      }
+      break;
+    }
+
+    const neighbours: Node[] = findNeighbours(currentNode, algoNodes);
+
+    if (neighbours.length !== 0 && currentNode.g !== undefined) {
       for (let i = 0; i < neighbours.length; i++) {
-        const distance =
+        const g: number = currentNode.g + 1;
+        const h: number =
           Math.abs(neighbours[i].row - endingNode.row) + Math.abs(neighbours[i].column - endingNode.column);
+        const distance: number = g + h;
         if (distance < algoNodes[neighbours[i].row][neighbours[i].column].distance) {
-          const updatedNeighbour = {
+          const updatedNeighbour: Node = {
             ...neighbours[i],
+            g: g,
+            h: h,
             distance: distance,
             previous: currentNode,
           };
-          const objIndex = priorityQueue.findIndex((obj) => obj.id === updatedNeighbour.id);
+          const objIndex: number = priorityQueue.findIndex((obj) => obj.id === updatedNeighbour.id);
           priorityQueue[objIndex] = updatedNeighbour;
           algoNodes[neighbours[i].row][neighbours[i].column] = updatedNeighbour;
         } else if (algoNodes[neighbours[i].row][neighbours[i].column].distance === null) {
-          const updatedNeighbour = {
+          const updatedNeighbour: Node = {
             ...neighbours[i],
+            g: g,
+            h: h,
             distance: distance,
             previous: currentNode,
           };
@@ -79,8 +105,8 @@ export function best(nodes) {
       };
     }
   }
-  const endTime = performance.now();
-  const timeTaken = endTime - startTime;
+  const endTime: number = performance.now();
+  const timeTaken: number = endTime - startTime;
   return {
     nodesOrder,
     pathOrder,

@@ -1,23 +1,37 @@
-export const recursive = (nodes) => {
+interface Node {
+  id: number;
+  row: number;
+  column: number;
+  type: string;
+  prevType: string;
+  neighbours: Node[];
+  distance: number;
+}
+
+interface WrapperNode {
+  node: Node;
+  type: string;
+}
+
+export const recursive = (nodes: Node[]) => {
   const copyOfNodes = JSON.parse(JSON.stringify(nodes));
-  const nodesOrder = [];
-  const horizontal =
+  const nodesOrder: WrapperNode[] = [];
+  const horizontal: boolean =
     nodes[nodes.length - 1].row - nodes[0].row > nodes[nodes.length - 1].column - nodes[0].column ? true : false;
-  console.log(nodes[nodes.length - 1]);
-  const divideRow = findEvenFromRange(nodes[0].row, nodes[nodes.length - 1].row);
-  const divideColumn = findEvenFromRange(nodes[0].column, nodes[nodes.length - 1].column);
-  let divide = horizontal ? divideRow : divideColumn;
+  const divideRow: number = findEvenFromRange(nodes[0].row, nodes[nodes.length - 1].row);
+  const divideColumn: number = findEvenFromRange(nodes[0].column, nodes[nodes.length - 1].column);
+  let divide: number = horizontal ? divideRow : divideColumn;
   if (nodes[nodes.length - 1].row - nodes[0].row === 0) {
     divide = divideColumn;
   } else if (nodes[nodes.length - 1].column - nodes[0].column === 0) {
     divide = divideRow;
   }
 
-  const nodes1 = [];
-  const nodes2 = [];
-  const wallNodes = [];
-  const passage = findPassage(horizontal, copyOfNodes);
-  copyOfNodes.forEach((node) => {
+  const nodes1: Node[] = [];
+  const nodes2: Node[] = [];
+  const wallNodes: WrapperNode[] = [];
+  const passage: number = findPassage(horizontal, copyOfNodes);
+  copyOfNodes.forEach((node: Node) => {
     if (!(node.row === 0 || node.row === 20 || node.column === 0 || node.column === 50)) {
       if (horizontal) {
         if (node.row === divide) {
@@ -53,12 +67,12 @@ export const recursive = (nodes) => {
   return nodesOrder;
 };
 
-function findPassage(horizontal, nodes) {
+function findPassage(horizontal: boolean, nodes: Node[]) {
   if (horizontal) {
     return findOddFromRange(nodes[0].column, nodes[nodes.length - 1].column);
   } else return findOddFromRange(nodes[0].row, nodes[nodes.length - 1].row);
 }
-function check(nodes) {
+function check(nodes: Node[]) {
   if (nodes.length < 3) {
     return false;
   }
@@ -68,21 +82,21 @@ function check(nodes) {
     return true;
   }
 }
-const markAsWall = (node, nodes) => {
+const markAsWall = (node: Node) => {
   return { node: node, type: "wall" };
 };
 
-function findEvenFromRange(start, end) {
-  const rangeArray = Array(end - start + 1)
-    .fill()
+function findEvenFromRange(start: number, end: number) {
+  const rangeArray: number[] = Array(end - start + 1)
+    .fill(0)
     .map((_, idx) => start + idx);
   const filteredArray = rangeArray.filter((number) => number % 2 === 0);
   return filteredArray[Math.floor(Math.random() * filteredArray.length)];
 }
 
-function findOddFromRange(start, end) {
-  const rangeArray = Array(end - start + 1)
-    .fill()
+function findOddFromRange(start: number, end: number) {
+  const rangeArray: number[] = Array(end - start + 1)
+    .fill(0)
     .map((_, idx) => start + idx);
   const filteredArray = rangeArray.filter((number) => number % 2 !== 0);
   return filteredArray[Math.floor(Math.random() * filteredArray.length)];

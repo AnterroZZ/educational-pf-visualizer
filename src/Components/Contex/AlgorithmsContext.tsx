@@ -1,8 +1,8 @@
 import { createContext, useContext, useState } from "react";
 
-export const AlgorithmsCont = createContext();
+export const AlgorithmsCont = createContext({} as any);
 
-export const AlgorithmsContext = (props) => {
+export const AlgorithmsContext: React.FC<any> = (props) => {
   const [currentAlgorithm, setCurrentAlgorithm] = useState("");
   const [currentMazeAlgorithm, setCurrentMazeAlgorithm] = useState("");
   const [currentAnimationStyle, setCurrentAnimationStyle] = useState("Classic");
