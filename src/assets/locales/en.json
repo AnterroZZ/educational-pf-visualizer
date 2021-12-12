@@ -1,0 +1,22 @@
+{
+  "translation": {
+    "Welcome to React": "Welcome to React and react-i18next",
+    "title": "Pathfinding algorithms",
+    "header_algorithms_menu": "Algorithms",
+    "header_generate_maze": "Generate maze",
+    "header_clear_walls": "Clear walls",
+    "header_reset_board": "Reset board",
+    "header_current_algo": "Current algorithm",
+    "header_animation_speed": "Animation Speed",
+    "header_animation_style": "Animation style",
+    "stat_time_elapsed": "Time elapsed",
+    "stat_length_of_road": "Length of the road",
+    "stat_number_of_operations": "Number of operations",
+    "compare_algo": "Algorithm",
+    "compare_time": "Time",
+    "compare_length": "Length",
+    "compare_operations": "Operations",
+    "compare_add_algorithm": "Add algorithm",
+    "compare_show": "Show"
+  }
+}

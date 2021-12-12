@@ -4,15 +4,12 @@ export const Controlls = createContext({} as any);
 
 export const ControlsContext: React.FC<any> = (props) => {
   const [mainPageCommand, setMainPageCommand] = useState("none");
-  const [language, setLanguage] = useState("english");
   const [executeAlgo, setExecuteAlgo] = useState(false);
   return (
     <Controlls.Provider
       value={{
         mainPageCommand,
         setMainPageCommand,
-        language,
-        setLanguage,
         executeAlgo,
         setExecuteAlgo,
       }}

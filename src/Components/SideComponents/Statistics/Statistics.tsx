@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import styles from "./Statistics.module.css";
 
 interface Props {
@@ -10,16 +11,17 @@ interface Props {
   isStatOpen: boolean;
 }
 const Statistics: React.FC<Props> = (props) => {
+  const { t } = useTranslation();
   return (
     <>
       <div className={`${styles.statisticsDialog} ${props.isStatOpen ? styles.statisticsDialogOpened : ""}`}>
         <p>{props.currentAlgorithm}</p>
         <div className={styles.statWrapper}>
-          <h4>Time elapsed:</h4>
+          <h4>{t("stat_time_elapsed")}:</h4>
           <p>{round(props.algoStats.timeTaken)}ms</p>
-          <h4>Length of the road:</h4>
+          <h4>{t("stat_length_of_road")}:</h4>
           <p>{props.algoStats.distance}</p>
-          <h4>Number of operations:</h4>
+          <h4>{t("stat_number_of_operations")}:</h4>
           <p>{props.algoStats.numberOfVisited}</p>
         </div>
       </div>

@@ -6,6 +6,7 @@ import { useAlgorithm } from "../../Contex/AlgorithmsContext";
 import DropdownMenu from "../../Header/HeaderComponents/DropdownMenu/DropdownMenu";
 import Picker from "../../Header/HeaderComponents/Picker/Picker";
 import DropdownItem from "../../Header/HeaderComponents/DropdownItem/DropdownItem";
+import { useTranslation } from "react-i18next";
 const pathfindingAlgosList = [
   "A* search",
   "Dijkstra's algorithm",
@@ -26,6 +27,7 @@ const CompareAlgo: React.FC<Props> = ({ isCompareOpen }) => {
   const [algosToCompare, setAlgosToCompare] = useState<Array<Algorithm>>([]);
   const { setExecuteAlgo } = useControls();
   const { compareAlgoData, setCurrentAlgorithm } = useAlgorithm();
+  const { t } = useTranslation();
   useEffect(() => {
     if (compareAlgoData === "clear") {
       setAlgosToCompare([]);
@@ -57,10 +59,10 @@ const CompareAlgo: React.FC<Props> = ({ isCompareOpen }) => {
     <div className={`${styles.compareAlgoWrapper} ${isCompareOpen ? styles.compareAlgoWrapperOpened : ""}`}>
       <div className={styles.list}>
         <div className={styles.row}>
-          <p>Algorithm</p>
-          <p>Time</p>
-          <p>Length</p>
-          <p>Operations</p>
+          <p>{t("compare_algo")}</p>
+          <p>{t("compare_time")}</p>
+          <p>{t("compare_length")}</p>
+          <p>{t("compare_operations")}</p>
         </div>
         <hr style={{ width: "450px", color: "#353535" }} />
         {algosToCompare.map((item) => {
@@ -72,7 +74,7 @@ const CompareAlgo: React.FC<Props> = ({ isCompareOpen }) => {
                 <p>{round(data.statistics.timeTaken)} ms</p>
                 <p>{data.statistics.distance}</p>
                 <p>{data.statistics.numberOfVisited}</p>
-                <Button onClick={() => handleShowAlgo(name)} text={"Show"} />
+                <Button onClick={() => handleShowAlgo(name)} text={t("compare_show")} />
               </div>
               <hr style={{ width: "450px", color: "#353535" }} />
             </>
@@ -80,7 +82,7 @@ const CompareAlgo: React.FC<Props> = ({ isCompareOpen }) => {
         })}
       </div>
       <footer className={styles.buttons}>
-        <Picker name={"Add algo"}>
+        <Picker name={t("compare_add_algorithm")}>
           <DropdownMenu>
             {pathfindingAlgosList
               .filter((algorithm) => {

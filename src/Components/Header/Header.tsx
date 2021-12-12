@@ -6,10 +6,13 @@ import { useAlgorithm } from "../Contex/AlgorithmsContext";
 import Button from "../UI/Button/Button";
 import { useState } from "react";
 import { useControls } from "../Contex/ControlsContext";
-import plFlag from "../../flags/pl.svg";
-import enFlag from "../../flags/gb.svg";
+import plFlag from "../../assets/flags/pl.svg";
+import enFlag from "../../assets/flags/gb.svg";
+import { useTranslation } from "react-i18next";
+import i18next from "i18next";
 
 const Header = () => {
+  const { t } = useTranslation();
   const {
     setCurrentAlgorithm,
     setCurrentMazeAlgorithm,
@@ -19,7 +22,7 @@ const Header = () => {
     currentAlgorithm,
     setAlgoAnimationSpeed,
   } = useAlgorithm();
-  const { setMainPageCommand, language, setLanguage } = useControls();
+  const { setMainPageCommand } = useControls();
   const [mazeAnimationSpeedText, setMazeAnimationSpeedText] = useState("Normal");
   const [algoAnimationSpeedText, setAlgoAnimationSpeedText] = useState("Fast");
 
@@ -73,17 +76,17 @@ const Header = () => {
   };
 
   const handleLanguageChange = () => {
-    language === "english" ? setLanguage("polish") : setLanguage("english");
+    i18next.language === "en" ? i18next.changeLanguage("pl") : i18next.changeLanguage("en");
   };
 
   return (
     <div className={styles.mainWrapper}>
       <div className={styles.wraper}>
-        <h2>Pathfinding algorithms</h2>
+        <h2>{t("title")}</h2>
         <h2 className={styles.divider}>/</h2>
-        <Picker name="Algorithms">
+        <Picker name={t("header_algorithms_menu")}>
           <DropdownMenu>
-            <p className={styles.subtitle}>Animation speed</p>
+            <p className={styles.subtitle}>{t("header_animation_speed")}</p>
             <Button text={algoAnimationSpeedText} onClick={handleChangeOfAlgoAnimationSpeed} />
             <hr />
             {pathfindingAlgosList.map((item) => {
@@ -92,11 +95,11 @@ const Header = () => {
           </DropdownMenu>
         </Picker>
         <h3>/</h3>
-        <Picker name="Generate maze">
+        <Picker name={t("header_generate_maze")}>
           <DropdownMenu>
-            <p className={styles.subtitle}>Animation style</p>
+            <p className={styles.subtitle}>{t("header_animation_style")}</p>
             <Button text={currentAnimationStyle} onClick={handleOnAnimationChange} />
-            <p className={styles.subtitle}>Animation speed</p>
+            <p className={styles.subtitle}>{t("header_animation_speed")}</p>
             <Button text={mazeAnimationSpeedText} onClick={handleChangeOfMazeAnimationSpeed} />
             <hr />
             <DropdownItem onClick={handleMazeChosen} name={"Random maze"} />
@@ -106,21 +109,22 @@ const Header = () => {
           </DropdownMenu>
         </Picker>
         <h2 className={styles.divider}>/</h2>
-        {/* <Controls /> */}
         <p className={styles.clearButton} onClick={() => setMainPageCommand("clear")}>
-          Clear walls
+          {t("header_clear_walls")}
         </p>
         <h3>/</h3>
         <p className={styles.clearButton} onClick={() => setMainPageCommand("reset")}>
-          Reset board
+          {t("header_reset_board")}
         </p>
         <h2 className={styles.divider}>/</h2>
-        <p className={styles.currentAlgo}>Current algorithm: {currentAlgorithm}</p>
+        <p className={styles.currentAlgo}>
+          {t("header_current_algo")}: {currentAlgorithm}
+        </p>
       </div>
       <img
         alt="language"
         onClick={handleLanguageChange}
-        src={language === "english" ? enFlag : plFlag}
+        src={i18next.language === "en" ? enFlag : plFlag}
         className={styles.english}
       ></img>
     </div>

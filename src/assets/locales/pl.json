@@ -1,0 +1,22 @@
+{
+  "translation": {
+    "Welcome to React": "Welcome to React and react-i18next",
+    "title": "Algorytmy do szukania drogi",
+    "header_algorithms_menu": "Algorytmy",
+    "header_generate_maze": "Generacja labiryntu",
+    "header_clear_walls": "Wyczyść ściany",
+    "header_reset_board": "Zresetuj plansze",
+    "header_current_algo": "Aktualny algorytm",
+    "header_animation_speed": "Prędkość animacji",
+    "header_animation_style": "Styl animacji",
+    "stat_time_elapsed": "Czas egzekucji",
+    "stat_length_of_road": "Długość drogi",
+    "stat_number_of_operations": "Ilość działań",
+    "compare_algo": "Algorytm",
+    "compare_time": "Czas",
+    "compare_length": "Długość",
+    "compare_operations": "Ilość działań",
+    "compare_add_algorithm": "Dodaj algorytm",
+    "compare_show": "Pokaż"
+  }
+}
