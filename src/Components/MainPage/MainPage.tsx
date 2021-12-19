@@ -409,7 +409,6 @@ const MainPage = () => {
 
   const classicMazeAnimation = (stack: WrapperNode[], type: string) => {
     setIsInBlockedState(true);
-    //TODO: FIX THAT SHIT
     let onlyWalls;
     if (type === "clear") {
       onlyWalls = nodes.flat().filter((arrNode) => {
@@ -435,15 +434,7 @@ const MainPage = () => {
       });
     }
 
-    for (let row = 0; row < nodes.length; row++) {
-      for (let column = 0; column < nodes[0].length; column++) {
-        const currentNode = nodes[row][column];
-        if (!(currentNode.type === "start" || currentNode.type === "end")) {
-          document.getElementById(`node-${currentNode.row}-${currentNode.column}`)!.className = `${nodeStyles.clear}`;
-          nodes[row][column] = { ...nodes[row][column], type: "clear" };
-        }
-      }
-    }
+    clearWalls(nodes);
 
     onlyWalls.forEach((currNode, indx) => {
       setTimeout(() => {
