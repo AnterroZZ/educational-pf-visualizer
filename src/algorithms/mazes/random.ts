@@ -8,8 +8,8 @@ interface Node {
   distance: number;
 }
 
-export function randomMaze(nodes: any) {
-  const newNodes = JSON.parse(JSON.stringify(nodes))
+export function randomMaze(nodes: Node[][]) {
+  const generatedClearNodes = JSON.parse(JSON.stringify(nodes))
     .flat()
     .filter((node: Node) => {
       if (node.row === 0 || node.row === nodes.length - 1) return false;
@@ -20,5 +20,5 @@ export function randomMaze(nodes: any) {
       return { node: node, type: "clear" };
     });
 
-  return newNodes;
+  return generatedClearNodes;
 }

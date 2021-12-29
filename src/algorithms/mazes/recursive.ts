@@ -14,57 +14,62 @@ interface WrapperNode {
 }
 
 export const recursive = (nodes: Node[]) => {
-  const copyOfNodes = JSON.parse(JSON.stringify(nodes));
-  const nodesOrder: WrapperNode[] = [];
-  const horizontal: boolean =
+  if (!isValid(nodes)) {
+    return [];
+  }
+  const generatedWallNodes: WrapperNode[] = [];
+  const splittedNodes1: Node[] = [];
+  const splittedNodes2: Node[] = [];
+
+  const isHorizontal: boolean =
     nodes[nodes.length - 1].row - nodes[0].row > nodes[nodes.length - 1].column - nodes[0].column ? true : false;
-  const divideRow: number = findEvenFromRange(nodes[0].row, nodes[nodes.length - 1].row);
-  const divideColumn: number = findEvenFromRange(nodes[0].column, nodes[nodes.length - 1].column);
-  let divide: number = horizontal ? divideRow : divideColumn;
+
+  const divisionRow: number = findEvenFromRange(nodes[0].row, nodes[nodes.length - 1].row);
+  const divisionColumn: number = findEvenFromRange(nodes[0].column, nodes[nodes.length - 1].column);
+  let divide: number = isHorizontal ? divisionRow : divisionColumn;
+
   if (nodes[nodes.length - 1].row - nodes[0].row === 0) {
-    divide = divideColumn;
+    divide = divisionColumn;
   } else if (nodes[nodes.length - 1].column - nodes[0].column === 0) {
-    divide = divideRow;
+    divide = divisionRow;
   }
 
-  const nodes1: Node[] = [];
-  const nodes2: Node[] = [];
   const wallNodes: WrapperNode[] = [];
-  const passage: number = findPassage(horizontal, copyOfNodes);
-  copyOfNodes.forEach((node: Node) => {
-    if (!(node.row === 0 || node.row === 20 || node.column === 0 || node.column === 50)) {
-      if (horizontal) {
-        if (node.row === divide) {
-          wallNodes.push(markAsWall(node));
-        } else if (node.row < divide) {
-          nodes1.push(node);
-        } else {
-          nodes2.push(node);
-        }
+  const passage: number = findPassage(isHorizontal, nodes);
+
+  nodes.forEach((node: Node) => {
+    if (node.row === 0 || node.row === 20 || node.column === 0 || node.column === 50) {
+      return;
+    }
+
+    if (isHorizontal) {
+      if (node.row === divide) {
+        wallNodes.push(markAsWall(node));
+      } else if (node.row < divide) {
+        splittedNodes1.push(node);
       } else {
-        if (node.column === divide) {
-          wallNodes.push(markAsWall(node));
-        } else if (node.column < divide) {
-          nodes1.push(node);
-        } else {
-          nodes2.push(node);
-        }
+        splittedNodes2.push(node);
+      }
+    } else {
+      if (node.column === divide) {
+        wallNodes.push(markAsWall(node));
+      } else if (node.column < divide) {
+        splittedNodes1.push(node);
+      } else {
+        splittedNodes2.push(node);
       }
     }
   });
 
-  if (horizontal) {
-    nodesOrder.push(...wallNodes.filter((item) => item.node.column !== passage));
-  } else nodesOrder.push(...wallNodes.filter((item) => item.node.row !== passage));
+  const wallNodesWithPassage = wallNodes.filter((item) => {
+    return isHorizontal ? item.node.column !== passage : item.node.row !== passage;
+  });
 
-  if (check(nodes1)) {
-    nodesOrder.push(...recursive(nodes1));
-  }
+  generatedWallNodes.push(...wallNodesWithPassage);
+  generatedWallNodes.push(...recursive(splittedNodes1));
+  generatedWallNodes.push(...recursive(splittedNodes2));
 
-  if (check(nodes2)) {
-    nodesOrder.push(...recursive(nodes2));
-  }
-  return nodesOrder;
+  return generatedWallNodes;
 };
 
 function findPassage(horizontal: boolean, nodes: Node[]) {
@@ -72,7 +77,7 @@ function findPassage(horizontal: boolean, nodes: Node[]) {
     return findOddFromRange(nodes[0].column, nodes[nodes.length - 1].column);
   } else return findOddFromRange(nodes[0].row, nodes[nodes.length - 1].row);
 }
-function check(nodes: Node[]) {
+function isValid(nodes: Node[]) {
   if (nodes.length < 3) {
     return false;
   }
