@@ -68,29 +68,26 @@ const Node: React.FC<Props> = ({
 
   const handleStartDrawing = (event: any) => {
     event.preventDefault();
-    console.log(node);
     setIsInDrawingMode(true);
-    switch (node.type) {
-      case "clear":
-      case "visited":
-      case "path":
-        setDrawingType("wall");
-        updateNodes(column, row, "wall", node.type);
-        break;
-      case "wall":
-        setDrawingType("clear");
-        node.prevType === "wall"
-          ? updateNodes(column, row, "clear", "wall")
-          : updateNodes(column, row, node.prevType, "wall");
-        break;
-      case "start":
-        setDrawingType("start");
-        break;
-      case "end":
-        setDrawingType("end");
-        break;
-      default:
-        break;
+
+    if (node.type === "clear" || node.type === "visited" || node.type === "path") {
+      setDrawingType("wall");
+      updateNodes(column, row, "wall", node.type);
+    }
+
+    if (node.type === "wall") {
+      setDrawingType("clear");
+      node.prevType === "wall"
+        ? updateNodes(column, row, "clear", "wall")
+        : updateNodes(column, row, node.prevType, "wall");
+    }
+
+    if (node.type === "start") {
+      setDrawingType("start");
+    }
+
+    if (node.type === "end") {
+      setDrawingType("end");
     }
   };
   const handleOnLeave = () => {
