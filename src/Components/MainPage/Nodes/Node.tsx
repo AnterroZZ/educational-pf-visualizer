@@ -38,31 +38,30 @@ const Node: React.FC<Props> = ({
   previousNode,
 }) => {
   const handleOnEnter = () => {
-    if (isInDrawingMode) {
-      switch (drawingType) {
-        case "wall":
-          if (node.type === "clear" || node.type === "visited" || node.type === "path") {
-            updateNodes(column, row, "wall", node.type);
-          }
-          break;
-        case "clear":
-          if (node.type === "wall") {
-            node.prevType === "wall"
-              ? updateNodes(column, row, "clear", "wall")
-              : updateNodes(column, row, node.prevType, "wall");
-          }
-          break;
-        case "start":
-          onMoveStartEnd(row, column, previousNode.row, previousNode.column, "start");
+    if (!isInDrawingMode) {
+      return;
+    }
 
-          break;
-        case "end":
-          onMoveStartEnd(row, column, previousNode.row, previousNode.column, "end");
-          break;
-        default:
-          console.error("Invalid drawing type: ", drawingType);
-          break;
+    if (drawingType === "wall") {
+      if (node.type === "clear" || node.type === "visited" || node.type === "path") {
+        updateNodes(column, row, "wall", node.type);
       }
+    }
+
+    if (drawingType === "clear") {
+      if (node.type === "wall") {
+        node.prevType === "wall"
+          ? updateNodes(column, row, "clear", "wall")
+          : updateNodes(column, row, node.prevType, "wall");
+      }
+    }
+
+    if (drawingType === "start") {
+      onMoveStartEnd(row, column, previousNode.row, previousNode.column, "start");
+    }
+
+    if (drawingType === "end") {
+      onMoveStartEnd(row, column, previousNode.row, previousNode.column, "end");
     }
   };
 
