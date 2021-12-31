@@ -298,52 +298,43 @@ const MainPage = () => {
 
   const executePathFinding = (time: number) => {
     let currentAlgoNodes: algorithmStack | undefined = undefined;
+    clearPaths();
     switch (currentAlgorithm) {
       case "Dijkstra's algorithm":
-        clearPaths();
         currentAlgoNodes = dijkstra(nodes);
-        setAlgoStats(currentAlgoNodes.statistics);
         break;
       case "A* search":
-        clearPaths();
         currentAlgoNodes = astar(nodes);
-        setAlgoStats(currentAlgoNodes.statistics);
         break;
       case "Breadth first search":
-        clearPaths();
         currentAlgoNodes = breadth(nodes);
-        setAlgoStats(currentAlgoNodes.statistics);
         break;
       case "Best first search":
-        clearPaths();
         currentAlgoNodes = best(nodes);
-        setAlgoStats(currentAlgoNodes.statistics);
         break;
       case "Depth first search":
-        clearPaths();
         currentAlgoNodes = depth(nodes);
-        setAlgoStats(currentAlgoNodes.statistics);
         break;
       default:
     }
-
-    if (currentAlgoNodes !== undefined) {
-      if (currentAlgoNodes.nodesOrder !== undefined) {
-        animateAlgo(currentAlgoNodes, time);
-      }
+    if (currentAlgoNodes === undefined || currentAlgoNodes.nodesOrder === undefined) {
+      return;
     }
+
+    setAlgoStats(currentAlgoNodes.statistics);
+    animateAlgo(currentAlgoNodes, time);
   };
 
   const eduMazeAnimation = (stack: WrapperNode[]) => {
     setIsInBlockedState(true);
-    prepareTheBoard(stack);
+    nodes = prepareTheBoard(stack);
     animateGrid(stack);
   };
 
   const classicMazeAnimation = (stack: WrapperNode[]) => {
     setIsInBlockedState(true);
     clearWalls(nodes);
-    const wallNodes = getWallNodesFromStack(stack);
+    const wallNodes: WrapperNode[] = getWallNodesFromStack(stack);
     animateGrid(wallNodes);
   };
 
@@ -438,12 +429,16 @@ function getStackForCurrentAlgorithm(mazeAlgorithmName: String) {
 
 function prepareTheBoard(stack: WrapperNode[]) {
   let type: string = stack[0].type;
-  type === "clear" ? (nodes = allWalls(nodes)) : (nodes = clearWalls(nodes));
+  if (type === "clear") {
+    return allWalls(nodes);
+  }
+
+  return clearWalls(nodes);
 }
 
 function getWallNodesFromStack(stack: WrapperNode[]) {
   const type: string = stack[0].type;
-  const onlyWalls = nodes.flat().filter((arrNode) => {
+  const onlyWalls: SingleNode[] = nodes.flat().filter((arrNode) => {
     for (let i = 0; i < stack.length; i++) {
       const { node } = stack[i];
       if (node.id === arrNode.id && type === "clear") return false;
