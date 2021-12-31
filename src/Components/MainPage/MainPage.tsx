@@ -221,10 +221,30 @@ const MainPage = () => {
     setIsInBlockedState(true);
     const { nodesOrder, pathOrder } = stack;
 
-    //Used to move around end and start node
-    if (nodesOrder !== undefined) {
-      if (time === 0) {
-        nodesOrder.forEach((currNode: SingleNode, indx: number) => {
+    if (nodesOrder === undefined) {
+      return;
+    }
+    if (time === 0) {
+      nodesOrder.forEach((currNode: SingleNode, indx: number) => {
+        document.getElementById(`node-${currNode.row}-${currNode.column}`)!.className = `${nodeStyles.visited}`;
+
+        nodes[currNode.row][currNode.column] = {
+          ...currNode,
+          type: "visited",
+        };
+        if (nodesOrder.length === indx + 1) {
+          if (pathOrder === undefined) {
+            return;
+          }
+          if (pathOrder.length === 0) {
+            setIsInBlockedState(false);
+          }
+          animatePath(pathOrder, time);
+        }
+      });
+    } else
+      nodesOrder.forEach((currNode, indx) => {
+        setTimeout(() => {
           document.getElementById(`node-${currNode.row}-${currNode.column}`)!.className = `${nodeStyles.visited}`;
 
           nodes[currNode.row][currNode.column] = {
@@ -232,34 +252,15 @@ const MainPage = () => {
             type: "visited",
           };
           if (nodesOrder.length === indx + 1) {
-            // setNodes(newNodes);
-            if (pathOrder !== undefined) {
-              if (pathOrder.length === 0) {
-                setIsInBlockedState(false);
-              } else animatePath(pathOrder, time);
+            if (pathOrder === undefined) {
+              return;
             }
+            if (pathOrder.length === 0) {
+              setIsInBlockedState(false);
+            } else animatePath(pathOrder, time);
           }
-        });
-      } else
-        nodesOrder.forEach((currNode, indx) => {
-          setTimeout(() => {
-            document.getElementById(`node-${currNode.row}-${currNode.column}`)!.className = `${nodeStyles.visited}`;
-
-            nodes[currNode.row][currNode.column] = {
-              ...currNode,
-              type: "visited",
-            };
-            if (nodesOrder.length === indx + 1) {
-              // setNodes(newNodes);
-              if (pathOrder !== undefined) {
-                if (pathOrder.length === 0) {
-                  setIsInBlockedState(false);
-                } else animatePath(pathOrder, time);
-              }
-            }
-          }, time * indx);
-        });
-    }
+        }, time * indx);
+      });
   };
 
   const animatePath = (stack: NodeInterface[], time: number) => {
@@ -268,7 +269,6 @@ const MainPage = () => {
         document.getElementById(`node-${currNode.row}-${currNode.column}`)!.className = `${nodeStyles.path}`;
         nodes[currNode.row][currNode.column].type = "path";
         if (stack.length === indx + 1) {
-          // setNodes(nooods);
           setIsInBlockedState(false);
         }
       });
@@ -278,7 +278,6 @@ const MainPage = () => {
           document.getElementById(`node-${currNode.row}-${currNode.column}`)!.className = `${nodeStyles.path}`;
           nodes[currNode.row][currNode.column].type = "path";
           if (stack.length === indx + 1) {
-            // setNodes(nooods);
             setIsInBlockedState(false);
           }
         }, 20 * indx);
