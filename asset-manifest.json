@@ -1,0 +1,24 @@
+{
+  "files": {
+    "main.css": "/educational-pf-visualizer/static/css/main.ae75b30e.chunk.css",
+    "main.js": "/educational-pf-visualizer/static/js/main.6852fa25.chunk.js",
+    "main.js.map": "/educational-pf-visualizer/static/js/main.6852fa25.chunk.js.map",
+    "runtime-main.js": "/educational-pf-visualizer/static/js/runtime-main.e1b77046.js",
+    "runtime-main.js.map": "/educational-pf-visualizer/static/js/runtime-main.e1b77046.js.map",
+    "static/js/2.7d9ee2de.chunk.js": "/educational-pf-visualizer/static/js/2.7d9ee2de.chunk.js",
+    "static/js/2.7d9ee2de.chunk.js.map": "/educational-pf-visualizer/static/js/2.7d9ee2de.chunk.js.map",
+    "static/js/3.0d7d1755.chunk.js": "/educational-pf-visualizer/static/js/3.0d7d1755.chunk.js",
+    "static/js/3.0d7d1755.chunk.js.map": "/educational-pf-visualizer/static/js/3.0d7d1755.chunk.js.map",
+    "index.html": "/educational-pf-visualizer/index.html",
+    "static/css/main.ae75b30e.chunk.css.map": "/educational-pf-visualizer/static/css/main.ae75b30e.chunk.css.map",
+    "static/js/2.7d9ee2de.chunk.js.LICENSE.txt": "/educational-pf-visualizer/static/js/2.7d9ee2de.chunk.js.LICENSE.txt",
+    "static/media/gb.3b671736.svg": "/educational-pf-visualizer/static/media/gb.3b671736.svg",
+    "static/media/pl.3038582e.svg": "/educational-pf-visualizer/static/media/pl.3038582e.svg"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.e1b77046.js",
+    "static/js/2.7d9ee2de.chunk.js",
+    "static/css/main.ae75b30e.chunk.css",
+    "static/js/main.6852fa25.chunk.js"
+  ]
+}
